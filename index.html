@@ -1,0 +1,1555 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>BOSE 도우미</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+ --bg: #fff;
+ --bg2: #f5f5f5;
+ --bg3: #ebebeb;
+ --text: #1a1a1a;
+ --text2: #555;
+ --text3: #999;
+ --border: #e0e0e0;
+ --border2: #c8c8c8;
+}
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+html, body { height:100%; background:var(--bg); color:var(--text); font-family:'Noto Sans KR',sans-serif; overflow:hidden; }
+
+/* ── 앱 ── */
+#app { max-width:480px; margin:0 auto; height:100vh; display:flex; flex-direction:column; }
+
+/* ── 헤더 ── */
+.hdr {
+ flex-shrink:0; height:52px; background:#000;
+ display:flex; align-items:center; justify-content:space-between;
+ padding:0 20px; position:sticky; top:0; z-index:100;
+}
+.hdr-logo { font-family:'Bebas Neue',sans-serif; font-size:22px; letter-spacing:5px; color:#fff; }
+.hdr-logo span { font-size:12px; font-family:'Noto Sans KR',sans-serif; font-weight:300; letter-spacing:1px; color:rgba(255,255,255,.45); margin-left:6px; }
+.hdr-right { display:flex; align-items:center; gap:10px; }
+.hdr-reset {
+ font-size:9px; color:rgba(255,255,255,.4); padding:2px 7px;
+ border:1px solid rgba(255,255,255,.2); border-radius:2px;
+ background:none; cursor:pointer; font-family:'Noto Sans KR',sans-serif;
+ letter-spacing:1.5px; text-transform:uppercase; transition:all .15s;
+}
+.hdr-reset:hover { color:#fff; border-color:rgba(255,255,255,.6); }
+
+/* ── 채팅 본문 ── */
+.chat-body {
+ flex:1; overflow-y:auto; background:var(--bg);
+ display:flex; flex-direction:column;
+ scroll-behavior:smooth;
+}
+.chat-body::-webkit-scrollbar { width:0; }
+
+/* ── 시작 화면 ── */
+.start-screen {
+ flex:1; display:flex; flex-direction:column;
+ align-items:center; justify-content:center;
+ padding:40px 24px; gap:0;
+ animation:ssFade .3s ease;
+}
+@keyframes ssFade { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+.ss-logo { font-family:'Bebas Neue',sans-serif; font-size:56px; letter-spacing:12px; color:var(--text); line-height:1; }
+.ss-tagline { font-size:10px; color:var(--text3); letter-spacing:3px; text-transform:uppercase; margin-top:6px; margin-bottom:36px; }
+.ss-question { font-size:16px; font-weight:700; color:var(--text); margin-bottom:24px; letter-spacing:-.3px; }
+.ss-btns { display:flex; flex-direction:column; gap:8px; width:100%; max-width:280px; }
+.ss-btn {
+ padding:14px 20px; font-size:13px; font-weight:700;
+ cursor:pointer; border:none; font-family:'Noto Sans KR',sans-serif;
+ text-align:center; transition:opacity .15s; border-radius:2px;
+ display:flex; align-items:center; justify-content:center; gap:8px;
+}
+.ss-btn.primary { background:var(--text); color:#fff; }
+.ss-btn.primary:active { opacity:.75; }
+.ss-btn.secondary { background:var(--bg); color:var(--text); border:1px solid var(--border2); font-weight:400; }
+.ss-btn.secondary:active { background:var(--bg2); }
+
+/* ── 메시지 행 ── */
+.msg-row { display:flex; gap:10px; align-items:flex-end; padding:0 16px; margin-top:12px; }
+.msg-row.user { flex-direction:row-reverse; }
+.msg-row:first-child { margin-top:16px; }
+
+.avatar {
+ width:28px; height:28px; background:#000; border-radius:50%;
+ display:flex; align-items:center; justify-content:center; flex-shrink:0;
+ font-family:'Bebas Neue',sans-serif; font-size:12px; letter-spacing:1px; color:#fff;
+}
+
+.bubble { max-width:80%; font-size:13px; line-height:1.7; }
+.bubble.bot {
+ background:var(--bg2); color:var(--text);
+ padding:11px 14px; border-radius:2px; border-radius:0 12px 12px 12px;
+}
+.bubble.user {
+ background:var(--text); color:#fff;
+ padding:11px 14px; border-radius:12px 12px 0 12px; font-weight:400;
+}
+.bubble b { font-weight:700; }
+
+/* 스텝 카드 */
+.sc {
+ display:block; margin-top:8px; padding:10px 12px;
+ background:#fff; border-bottom:1px solid var(--border);
+ border-left:2px solid var(--text); font-size:12px; line-height:1.65;
+}
+.sc .sn { font-size:9px; color:var(--text3); letter-spacing:2px; text-transform:uppercase; margin-bottom:3px; font-weight:400; }
+.sc .st { font-weight:700; margin-bottom:3px; color:var(--text); font-size:13px; }
+.sc .sd { color:var(--text2); font-weight:300; }
+.sc .gh { color:var(--text); font-weight:500; }
+.sc .gw { color:#8a5500; font-weight:500; }
+
+/* 경고 박스 */
+.wn {
+ display:block; margin-top:8px; padding:11px 13px;
+ background:#fffbf0; border:1px solid #e8d090;
+ border-radius:2px; font-size:12px; color:#6b4d00; line-height:1.65;
+}
+
+/* 정보 박스 */
+.ib {
+ display:block; margin-top:8px; padding:11px 13px;
+ background:var(--bg2); border:1px solid var(--border);
+ border-radius:2px; font-size:12px; color:var(--text2); line-height:1.7;
+}
+.ib .it { font-size:12px; font-weight:700; color:var(--text); margin-bottom:6px; }
+.ib .iw { margin-top:7px; padding:7px 9px; background:#fff8e1; border:1px solid #e8d090; border-radius:2px; color:#7a5200; font-size:11.5px; line-height:1.6; }
+
+/* 단종 배너 */
+.disc-b {
+ display:block; margin-top:8px; padding:9px 11px;
+ background:#fff8f8; border:1px solid #f5c0c0;
+ border-radius:2px; font-size:11.5px; color:#8b2020; line-height:1.6;
+}
+
+/* ── 타이핑 ── */
+.typing-row { display:flex; gap:10px; align-items:flex-end; padding:0 16px; margin-top:12px; }
+.typing-dots {
+ display:flex; align-items:center; gap:4px; padding:11px 14px;
+ background:var(--bg2); border-radius:0 12px 12px 12px; width:fit-content;
+}
+.typing-dots span { width:5px; height:5px; background:var(--border2); border-radius:50%; animation:td 1.2s infinite; }
+.typing-dots span:nth-child(2) { animation-delay:.2s; }
+.typing-dots span:nth-child(3) { animation-delay:.4s; }
+@keyframes td { 0%,60%,100%{transform:translateY(0)} 30%{transform:translateY(-5px)} }
+
+/* ── 칩 ── */
+.chips { display:flex; flex-wrap:wrap; gap:6px; padding:8px 16px 0 54px; }
+.chip {
+ background:var(--bg2); border:1px solid var(--border); color:var(--text2);
+ padding:6px 14px; border-radius:20px; font-size:12px; font-weight:400;
+ cursor:pointer; white-space:nowrap; font-family:'Noto Sans KR',sans-serif;
+ transition:all .13s;
+}
+.chip:hover, .chip:active { background:var(--text); color:#fff; border-color:var(--text); font-weight:500; }
+.chip.call { background:var(--text); color:#fff; border-color:var(--text); font-weight:700; }
+.chip.photo { border-color:var(--text); color:var(--text); font-weight:500; }
+
+/* 이미지 */
+.img-bub { max-width:200px; border-radius:8px; margin-top:5px; display:block; }
+
+/* ── 제품 카드 그리드 ── */
+.prod-grid {
+  display:grid; grid-template-columns:1fr 1fr;
+  gap:10px; padding:6px 16px 2px 16px; width:100%;
+}
+.prod-card {
+  background:#fff; border:1px solid var(--border);
+  border-radius:8px; padding:12px 10px 10px;
+  cursor:pointer; transition:all .15s;
+  display:flex; flex-direction:column; align-items:center; gap:6px;
+  text-align:center;
+}
+.prod-card:hover, .prod-card:active { border-color:var(--text); background:var(--bg2); }
+.prod-card.disc { opacity:.65; }
+.prod-card-img { font-size:32px; line-height:1; }
+.prod-card-name { font-size:11.5px; font-weight:700; color:var(--text); line-height:1.4; }
+.prod-card-sub { font-size:10px; color:var(--text3); line-height:1.3; font-weight:400; }
+.prod-card-badge {
+  font-size:9px; background:var(--text3); color:#fff;
+  padding:2px 6px; border-radius:2px; letter-spacing:.5px;
+}
+
+/* ── 입력창 ── */
+.input-bar {
+ flex-shrink:0; padding:10px 16px 20px;
+ background:rgba(255,255,255,.97); backdrop-filter:blur(10px);
+ border-top:1px solid var(--border);
+ display:flex; gap:8px; align-items:flex-end;
+}
+.input-wrap {
+ flex:1; background:var(--bg2); border-radius:2px;
+ display:flex; align-items:center; padding:0 14px;
+ min-height:42px; border:1px solid var(--border);
+}
+.txt-input {
+ flex:1; background:transparent; border:none; outline:none;
+ color:var(--text); font-size:13px; padding:10px 0;
+ resize:none; max-height:90px; overflow-y:auto; font-family:'Noto Sans KR',sans-serif;
+}
+.txt-input::placeholder { color:var(--text3); }
+.send-btn {
+ width:42px; height:42px; background:var(--text); border:none;
+ border-radius:2px; cursor:pointer; display:flex;
+ align-items:center; justify-content:center; flex-shrink:0; transition:opacity .15s;
+}
+.send-btn:active { opacity:.7; }
+.send-btn svg { width:15px; height:15px; }
+
+
+/* ── 제품 카드 그리드 ── */
+.product-grid {
+  display:grid; grid-template-columns:1fr 1fr;
+  gap:8px; padding:8px 16px 4px 16px;
+  width:100%;
+}
+.product-card {
+  background:#fff; border:1px solid var(--border);
+  border-radius:8px; padding:12px 10px 10px;
+  cursor:pointer; transition:all .15s;
+  display:flex; flex-direction:column; align-items:center; gap:6px;
+  text-align:center;
+}
+.product-card:hover, .product-card:active {
+  border-color:var(--text); background:var(--bg2);
+}
+.product-card.discontinued { opacity:.65; }
+.product-card-icon { font-size:28px; line-height:1; }
+.product-card-name {
+  font-size:11.5px; font-weight:700; color:var(--text);
+  line-height:1.35; word-break:keep-all;
+}
+.product-card-sub {
+  font-size:10px; color:var(--text3); line-height:1.4;
+  word-break:keep-all;
+}
+.product-card-badge {
+  font-size:9px; color:#8b2020; background:#fff0f0;
+  border:1px solid #f5c0c0; border-radius:3px;
+  padding:1px 5px; font-weight:700; letter-spacing:.5px;
+}
+
+/* 페이드인 */
+.fin { animation:fup .2s ease forwards; opacity:0; transform:translateY(4px); }
+@keyframes fup { to { opacity:1; transform:translateY(0); } }
+
+#photoInput { display:none; }
+</style>
+</head>
+<body>
+<div id="app">
+
+ <!-- 헤더 -->
+ <div class="hdr">
+ <div class="hdr-logo">BO<span>SE</span></div>
+ <div class="hdr-right">
+ <div class="hdr-status">
+ <div class="hdr-dot"></div>
+ <span class="hdr-txt">온라인</span>
+ </div>
+ <button class="hdr-reset" onclick="doReset()">처음으로</button>
+ </div>
+ </div>
+
+ <!-- 채팅 본문 -->
+ <div class="chat-body" id="chatBody"></div>
+
+ <!-- 입력창 -->
+ <div class="input-bar" id="inputBar">
+ <div class="input-wrap">
+ <textarea class="txt-input" id="txtInput"
+ placeholder="증상이나 제품명을 입력하세요..."
+ rows="1" onkeydown="onKey(event)" oninput="autoResize(this)"></textarea>
+ </div>
+ <button class="send-btn" onclick="onSend()">
+ <svg viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+ <line x1="22" y1="2" x2="11" y2="13"/>
+ <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+ </svg>
+ </button>
+ </div>
+
+</div>
+<input type="file" id="photoInput" accept="image/*" capture="environment" onchange="onPhoto(event)">
+
+<!-- ════════ DATA ════════ -->
+<script>
+const BOSE_DATA = {
+ menus: {
+ 'screen-headphone': { title:'헤드폰', cat:'headphone', items:[
+ { title:'QC Ultra 헤드폰 2세대', sub:'2025년 출시 · ANC · 공간음향 · 최대 30시간', screen:'screen-qcutra2' },
+ { title:'QC Ultra 헤드폰', sub:'플래그십 · ANC · 공간음향 · 머리감지', screen:'screen-qcutra' },
+ { title:'QC 헤드폰', sub:'2024년 출시 · ANC · 최대 24시간', screen:'screen-qc' },
+ { title:'QC45 헤드폰', sub:'2021년 출시 · ANC · 최대 24시간', screen:'screen-qc45' },
+ { title:'QC35 헤드폰 II', sub:'단종 · 최대 20시간 · NFC 지원', screen:'screen-qc35', discontinued:true },
+ { title:'QC25 헤드폰', sub:'단종 · 유선 전용 · AAA 건전지', screen:'screen-qc25', discontinued:true },
+ ]},
+ 'screen-earbud': { title:'이어버드', cat:'earbuds', items:[
+ { title:'QC Ultra 이어버드 2세대', sub:'2024년 출시 · ANC · 무선충전 · BT 5.4', screen:'screen-qc-ultra-earbuds-2' },
+ { title:'QC Ultra 이어버드', sub:'현행 · ANC · 공간음향', screen:'screen-qc-ultra-earbuds' },
+ { title:'울트라 오픈 이어버드', sub:'오픈형 · 귀 걸침 구조 · 주변음 허용', screen:'screen-ultra-open-earbuds' },
+ { title:'QC 이어버드 II', sub:'커스텀 튠 · ANC · 2022년 출시', screen:'screen-qc-eb-2' },
+ { title:'QC 이어버드 (2020/Sport)', sub:'단종 · 이전 세대 무선 이어버드', screen:'screen-qc-sport', discontinued:true },
+ ]},
+ 'screen-speaker': { title:'스피커', cat:'speaker', items:[
+ { title:'홈 스피커 300/450/500', sub:'Wi-Fi · 멀티룸 · SimpleSync', screen:'screen-home-speaker' },
+ { title:'SoundLink Flex', sub:'Flex · Flex 2세대 · SE', screen:'screen-sl-flex' },
+ { title:'SoundLink Max', sub:'최신 포터블 및 홈 스피커', screen:'screen-sl-max' },
+ { title:'SoundLink Revolve', sub:'Revolve I/II · Plus I/II', screen:'screen-sl-revolve' },
+ { title:'SoundLink Mini', sub:'Mini I · II · Special Edition', screen:'screen-sl-mini' },
+ ]},
+ 'screen-soundbar': { title:'홈 시어터 / 사운드바', cat:'soundbar', items:[
+ { title:'Soundbar Ultra', sub:'플래그십 · Dolby Atmos · 공간음향', screen:'screen-sb-ultra' },
+ { title:'Soundbar 900', sub:'Dolby Atmos · Wi-Fi · HDMI eARC', screen:'screen-sb-900' },
+ { title:'Soundbar 700', sub:'Wi-Fi · HDMI ARC · ADAPTiQ 음향보정', screen:'screen-sb-700' },
+ { title:'Soundbar 600', sub:'Dolby Atmos · Wi-Fi · HDMI ARC', screen:'screen-sb-600' },
+ { title:'Soundbar 500', sub:'슬림 디자인 · Wi-Fi · HDMI ARC', screen:'screen-sb-500' },
+ { title:'Soundbar 300', sub:'컴팩트 · Wi-Fi · HDMI ARC', screen:'screen-sb-300' },
+ { title:'TV 스피커', sub:'간편 연결 · 광케이블 · HDMI ARC', screen:'screen-sb-tv' },
+ { title:'Solo 5/15/II', sub:'단종 · 광케이블 · 블루투스', screen:'screen-sb-disc', discontinued:true },
+ ]},
+ 'screen-homeaudio': { title:'홈오디오', cat:'homeaudio', items:[
+ { title:'Wave SoundTouch', sub:'Wi-Fi 스트리밍', screen:'screen-wave-st', discontinued:true },
+ { title:'Wave Music III/IV', sub:'터치패드 · CD', screen:'screen-wave-mod', discontinued:true },
+ { title:'Wave Music I/Acoustic Wave II', sub:'클래식 모델 · 리모컨 전용', screen:'screen-wave-cls', discontinued:true },
+ { title:'SoundTouch 10', sub:'컴팩트 · Wi-Fi · 블루투스', screen:'screen-st10', discontinued:true },
+ { title:'SoundTouch 20', sub:'미드사이즈 · Wi-Fi', screen:'screen-st20', discontinued:true },
+ { title:'SoundTouch 30', sub:'대형 · Wi-Fi · 프리미엄', screen:'screen-st30', discontinued:true },
+ ]},
+ },
+
+ guides: {
+ 'screen-qcutra2': { tag:'QC Ultra 헤드폰 2세대', cat:'headphone', reset:{
+ title:'공장 초기화',
+ steps:[
+ { num:'STEP 01', title:'Bose 앱 제거', desc:'앱에서 먼저 제품을 제거해 주세요.' },
+ { num:'STEP 02', title:'블루투스 목록 삭제', desc:'스마트폰 블루투스 설정에서 기기를 삭제하세요.' },
+ { num:'STEP 03', title:'버튼 조작', desc:'오른쪽 이어컵: <span class="gh">블루투스/전원 버튼 + 다기능 버튼</span> 동시에 <span class="gh">15초</span> 누르세요.' },
+ { num:'STEP 04', title:'확인', desc:'흰색 불이 켜지면 초기화 완료!' },
+ ], warning:'저장된 모든 설정이 삭제됩니다.'
+ }},
+ 'screen-qcutra': { tag:'QC Ultra 헤드폰', cat:'headphone', reset:{
+ title:'공장 초기화',
+ steps:[
+ { num:'STEP 01', title:'Bose 앱 제거', desc:'앱에서 먼저 제품을 제거해 주세요.' },
+ { num:'STEP 02', title:'블루투스 목록 삭제', desc:'스마트폰 블루투스에서 기기를 삭제하세요.' },
+ { num:'STEP 03', title:'버튼 조작', desc:'오른쪽 이어컵: <span class="gh">블루투스/전원 버튼 + 다기능 버튼</span> 동시에 <span class="gh">15초</span> 누르세요.' },
+ { num:'STEP 04', title:'확인', desc:'흰색 불이 켜지면 완료!' },
+ ], warning:'저장된 모든 설정이 삭제됩니다.'
+ }},
+ 'screen-qc': { tag:'QC 헤드폰', cat:'headphone', reset:{
+ title:'공장 초기화',
+ steps:[
+ { num:'STEP 01', title:'Bose 앱 제거', desc:'앱에서 제품을 제거하세요.' },
+ { num:'STEP 02', title:'버튼 조작', desc:'슬라이더를 <span class="gh">BT 방향</span>으로 밀어 페어링 모드 진입 후 <span class="gh">ANC 버튼 10초</span> 누르세요.' },
+ { num:'STEP 03', title:'확인', desc:'표시등 흰색 깜빡 = 완료!' },
+ ], warning:null
+ }},
+ 'screen-qc45': { tag:'QC45 헤드폰', cat:'headphone', reset:{
+ title:'공장 초기화',
+ steps:[
+ { num:'STEP 01', title:'Bose 앱 제거', desc:'앱에서 먼저 제품을 제거하세요.' },
+ { num:'STEP 02', title:'버튼 조작', desc:'전원 ON 상태에서 <span class="gh">볼륨 − + 다기능 버튼</span> 동시에 <span class="gh">10초</span> 누르세요.' },
+ { num:'STEP 03', title:'확인', desc:'표시등 흰색 깜빡 = 완료!' },
+ ], warning:'폰 블루투스 목록에서도 기기를 삭제하세요.'
+ }},
+ 'screen-qc35': { tag:'QC35 헤드폰 II', cat:'headphone', discontinued:true, reset:{
+ title:'공장 초기화',
+ steps:[
+ { num:'STEP 01', title:'앱 제거 & BT 삭제', desc:'Bose 앱 제거 + 폰 블루투스에서 기기 삭제.' },
+ { num:'STEP 02', title:'슬라이더 → BT', desc:'슬라이더를 <span class="gh">BT 방향</span>으로 밀어 페어링 모드 진입.' },
+ { num:'STEP 03', title:'ANC 버튼 10초', desc:'<span class="gh">ANC 버튼 10초</span> 길게 → 표시등 흰색 깜빡 = 완료!' },
+ ], warning:null
+ }},
+ 'screen-qc25': { tag:'QC25 헤드폰', cat:'headphone', discontinued:true, reset:{
+ title:'공장 초기화',
+ steps:[
+ { num:'STEP 01', title:'버튼 조작', desc:'전원 ON 상태에서 <span class="gh">볼륨 − 버튼 10초</span> 길게 누르세요.' },
+ { num:'STEP 02', title:'확인', desc:'"Bluetooth device list cleared" 음성 = 완료!' },
+ ], warning:null
+ }},
+ 'screen-qc-ultra-earbuds-2': { tag:'QC Ultra 이어버드 2세대', cat:'earbuds', reset:{
+ title:'공장 초기화 (3번 반복)',
+ steps:[
+ { num:'STEP 01', title:'앱 제거 & BT 삭제', desc:'Bose 앱 제거 + 폰 블루투스에서 기기 삭제.' },
+ { num:'STEP 02', title:'초기화 동작 (3회)', desc:'케이스에 넣고 덮개 오픈 → 뒷면 버튼 <span class="gh">25초</span> 누름 → 흰색 2번 깜빡 → 파란색 → 꺼짐. <span class="gw">이 과정을 3번 반복!</span>' },
+ { num:'STEP 03', title:'완료 확인', desc:'3번째 후 주황색 깜빡 → 파란색 천천히 깜빡 = 완료!' },
+ ], warning:'반드시 3번 반복해야 완전 초기화예요.'
+ }},
+ 'screen-qc-ultra-earbuds': { tag:'QC Ultra 이어버드', cat:'earbuds', reset:{
+ title:'공장 초기화 (3번 반복)',
+ steps:[
+ { num:'STEP 01', title:'앱 제거 & BT 삭제', desc:'앱 제거 + 폰 블루투스에서 기기 삭제.' },
+ { num:'STEP 02', title:'초기화 동작 (3회)', desc:'케이스 넣고 덮개 오픈 → 뒷면 버튼 <span class="gh">25초</span> 누름. 3번 반복!' },
+ { num:'STEP 03', title:'완료 확인', desc:'주황 깜빡 → 파란색 천천히 깜빡 = 완료!' },
+ ], warning:'3번 반복 필수!'
+ }},
+ 'screen-ultra-open-earbuds': { tag:'울트라 오픈 이어버드', cat:'earbuds', reset:{
+ title:'공장 초기화 (3번 반복)',
+ steps:[
+ { num:'STEP 01', title:'앱 제거 & BT 삭제', desc:'앱 제거 + 폰 블루투스에서 기기 삭제.' },
+ { num:'STEP 02', title:'초기화 동작 (3회)', desc:'케이스 넣고 덮개 오픈 → 뒷면 버튼 <span class="gh">20초</span>. 3번 반복!' },
+ { num:'STEP 03', title:'완료 확인', desc:'주황 깜빡 → 파란색 천천히 깜빡 = 완료!' },
+ ], warning:null
+ }},
+ 'screen-qc-eb-2': { tag:'QC 이어버드 II', cat:'earbuds', reset:{
+ title:'공장 초기화 (1회)',
+ steps:[
+ { num:'STEP 01', title:'앱 제거 & 케이블 연결', desc:'앱 제거 후 케이스에 충전 케이블 연결.' },
+ { num:'STEP 02', title:'버튼 조작', desc:'케이스에 넣고 덮개 오픈 → 뒷면 버튼 <span class="gh">30초</span> 누름.' },
+ { num:'STEP 03', title:'완료 확인', desc:'LED 흰색 고정 → 파란색 천천히 깜빡 = 완료! (1회로 끝)' },
+ ], warning:null
+ }},
+ 'screen-qc-sport': { tag:'QC 이어버드 (2020/Sport)', cat:'earbuds', discontinued:true, reset:{
+ title:'공장 초기화',
+ steps:[
+ { num:'STEP 01', title:'버튼 조작', desc:'케이스에 넣고 덮개 오픈 → 뒷면 버튼 <span class="gh">30초</span>.' },
+ { num:'STEP 02', title:'확인', desc:'흰색·주황 교차 → 파란색 = 완료!' },
+ ], warning:'폰 블루투스에서 기기 삭제 필수.'
+ }},
+ 'screen-home-speaker': { tag:'홈 스피커 300/450/500', cat:'speaker', reset:{
+ title:'공장 초기화',
+ steps:[
+ { num:'STEP 01', title:'앱 제거', desc:'Bose 앱 내 제품 목록에서 먼저 제거하세요.' },
+ { num:'STEP 02', title:'버튼 조작', desc:'<span class="gh">볼륨 − + AUX 버튼</span> 동시에 <span class="gh">10초</span>.' },
+ { num:'STEP 03', title:'확인', desc:'라이트 바 2번 깜빡 = 완료!' },
+ ], warning:null
+ }},
+ 'screen-sl-flex': { tag:'SoundLink Flex', cat:'speaker', reset:{
+ title:'공장 초기화',
+ steps:[
+ { num:'STEP 01', title:'앱 제거', desc:'Bose 앱에서 스피커 제거.' },
+ { num:'STEP 02', title:'버튼 조작', desc:'<span class="gh">전원 버튼 + 볼륨 − 버튼</span> 동시에 <span class="gh">10초</span>.' },
+ { num:'STEP 03', title:'확인', desc:'표시등 흰색 깜빡 → 재부팅 = 완료!' },
+ ], warning:null
+ }},
+ 'screen-sl-max': { tag:'SoundLink Max', cat:'speaker', reset:{
+ title:'공장 초기화',
+ steps:[
+ { num:'STEP 01', title:'앱 제거', desc:'Bose 앱에서 스피커 제거.' },
+ { num:'STEP 02', title:'버튼 조작', desc:'<span class="gh">전원 버튼 + 볼륨 − 버튼</span> 동시에 <span class="gh">10초</span>.' },
+ { num:'STEP 03', title:'확인', desc:'흰색 깜빡 → 재부팅 = 완료!' },
+ ], warning:null
+ }},
+ 'screen-sl-revolve': { tag:'SoundLink Revolve', cat:'speaker', reset:{
+ title:'공장 초기화',
+ steps:[
+ { num:'STEP 01', title:'앱 제거', desc:'Bose 앱에서 스피커 제거.' },
+ { num:'STEP 02', title:'버튼 조작', desc:'<span class="gh">전원/블루투스 + 볼륨 − 버튼</span> 동시에 <span class="gh">10초</span>.' },
+ { num:'STEP 03', title:'확인', desc:'"Bluetooth device list cleared" 음성 = 완료!' },
+ ], warning:'I세대 Micro-USB, II세대 USB-C 사용.'
+ }},
+ 'screen-sl-mini': { tag:'SoundLink Mini', cat:'speaker', reset:{
+ title:'공장 초기화',
+ steps:[
+ { num:'STEP 01', title:'버튼 조작', desc:'<span class="gh">전원 + 볼륨 − 버튼</span> 동시에 <span class="gh">10초</span>.' },
+ { num:'STEP 02', title:'확인', desc:'"Bluetooth device list cleared" = 완료!' },
+ ], warning:'Mini I은 전용 충전 단자(단종). 케이블 확보 필요.'
+ }},
+ 'screen-sb-ultra': { tag:'Soundbar Ultra', cat:'soundbar', reset:{
+ title:'공장 초기화',
+ steps:[
+ { num:'STEP 01', title:'앱 제거', desc:'Bose 앱에서 제품 제거.' },
+ { num:'STEP 02', title:'리모컨 조작', desc:'<span class="gh">전원 버튼 + 앞으로 건너뛰기 버튼</span> 동시에 <span class="gh">5초</span>.' },
+ { num:'STEP 03', title:'확인', desc:'라이트 바 흰색 깜빡 → 주황색 대기 = 완료!' },
+ ], warning:null
+ }},
+ 'screen-sb-900': { tag:'Soundbar 900', cat:'soundbar', reset:{
+ title:'공장 초기화',
+ steps:[
+ { num:'STEP 01', title:'앱 제거', desc:'Bose 앱에서 제품 제거.' },
+ { num:'STEP 02', title:'리모컨 조작', desc:'<span class="gh">전원 + 앞으로 건너뛰기 버튼</span> 동시에 <span class="gh">5초</span>.' },
+ { num:'STEP 03', title:'확인', desc:'라이트 바 흰색 깜빡 = 완료!' },
+ ], warning:null
+ }},
+ 'screen-sb-700': { tag:'Soundbar 700', cat:'soundbar', reset:{
+ title:'공장 초기화',
+ steps:[
+ { num:'STEP 01', title:'앱 제거', desc:'Bose 앱에서 제품 제거.' },
+ { num:'STEP 02', title:'리모컨 조작', desc:'<span class="gh">전원 + 앞으로 건너뛰기 버튼</span> 동시에 <span class="gh">5초</span>.' },
+ { num:'STEP 03', title:'확인', desc:'라이트 바 흰색 깜빡 = 완료!' },
+ ], warning:null
+ }},
+ 'screen-sb-600': { tag:'Soundbar 600', cat:'soundbar', reset:{
+ title:'공장 초기화',
+ steps:[
+ { num:'STEP 01', title:'앱 제거', desc:'Bose 앱에서 제품 제거.' },
+ { num:'STEP 02', title:'리모컨 조작', desc:'<span class="gh">재생/일시정지 + 볼륨 − 버튼</span> 동시에 <span class="gh">5초</span>.' },
+ { num:'STEP 03', title:'확인', desc:'라이트 바 흰색 깜빡 = 완료!' },
+ ], warning:'Ultra/900/700/500과 버튼 조합이 달라요!'
+ }},
+ 'screen-sb-500': { tag:'Soundbar 500', cat:'soundbar', reset:{
+ title:'공장 초기화',
+ steps:[
+ { num:'STEP 01', title:'앱 제거', desc:'Bose 앱에서 제품 제거.' },
+ { num:'STEP 02', title:'리모컨 조작', desc:'<span class="gh">전원 + 앞으로 건너뛰기 버튼</span> 동시에 <span class="gh">5초</span>.' },
+ { num:'STEP 03', title:'확인', desc:'라이트 바 흰색 깜빡 = 완료!' },
+ ], warning:null
+ }},
+ 'screen-sb-300': { tag:'Soundbar 300', cat:'soundbar', reset:{
+ title:'공장 초기화',
+ steps:[
+ { num:'STEP 01', title:'앱 제거', desc:'Bose 앱에서 제품 제거.' },
+ { num:'STEP 02', title:'리모컨 조작', desc:'<span class="gh">재생/일시정지 + 볼륨 − 버튼</span> 동시에 <span class="gh">5초</span>.' },
+ { num:'STEP 03', title:'확인', desc:'라이트 바 흰색 깜빡 = 완료!' },
+ ], warning:null
+ }},
+ 'screen-sb-tv': { tag:'TV 스피커', cat:'soundbar', reset:{
+ title:'초기화',
+ steps:[
+ { num:'STEP 01', title:'전원 리셋', desc:'전원 케이블 분리 → 30초 대기 → 재연결.' },
+ { num:'STEP 02', title:'블루투스 초기화', desc:'전원 켠 상태에서 <span class="gh">블루투스 버튼 10초</span> 길게.' },
+ ], warning:null
+ }},
+ 'screen-sb-disc': { tag:'Solo 5/15/II', cat:'soundbar', discontinued:true, reset:{
+ title:'초기화',
+ steps:[
+ { num:'STEP 01', title:'전원 리셋', desc:'전원 케이블 분리 → 60초 대기 → 재연결.' },
+ ], warning:'단종 제품. 수리 지원이 제한됩니다.'
+ }},
+ 'screen-wave-st': { tag:'Wave SoundTouch', cat:'homeaudio', discontinued:true, reset:{
+ title:'초기화',
+ steps:[
+ { num:'STEP 01', title:'전원 리셋', desc:'전원 코드 분리 → 60초 대기 → 재연결.' },
+ { num:'STEP 02', title:'페데스탈 초기화', desc:'뒷면 Control 누른 채 전원 재연결 → 5초 유지 → LED 흰색 깜빡.' },
+ ], warning:'단종 제품. SoundTouch 앱 지원 종료.'
+ }},
+ 'screen-wave-mod': { tag:'Wave Music System III/IV', cat:'homeaudio', discontinued:true, reset:{
+ title:'공장 초기화',
+ steps:[
+ { num:'STEP 01', title:'전원 리셋', desc:'전원 코드 분리 → 60초 후 재연결.' },
+ { num:'STEP 02', title:'메뉴 초기화', desc:'리모컨 [Alarm Setup] 길게 → RESET ALL → YES → [3]번 → RESET COMPLETE.' },
+ ], warning:'단종 제품. 수리 제한될 수 있어요.'
+ }},
+ 'screen-wave-cls': { tag:'Wave Music System I · Acoustic Wave II', cat:'homeaudio', discontinued:true, reset:{
+ title:'전원 리셋 (유일한 방법)',
+ steps:[
+ { num:'STEP 01', title:'전원 코드 분리', desc:'60초 대기 후 재연결. 별도 초기화 메뉴 없음.' },
+ ], warning:'단종 제품. 수리 제한됩니다.'
+ }},
+ 'screen-st10': { tag:'SoundTouch 10', cat:'homeaudio', discontinued:true, reset:{
+ title:'공장 초기화',
+ steps:[
+ { num:'STEP 01', title:'버튼 조작', desc:'뒷면 <span class="gh">Wi-Fi 버튼 + 볼륨 − 버튼</span> 동시에 <span class="gh">10초</span>.' },
+ { num:'STEP 02', title:'확인', desc:'표시등 깜빡 = 완료!' },
+ ], warning:'SoundTouch 앱 지원 종료.'
+ }},
+ 'screen-st20': { tag:'SoundTouch 20', cat:'homeaudio', discontinued:true, reset:{
+ title:'공장 초기화',
+ steps:[
+ { num:'STEP 01', title:'버튼 조작', desc:'뒷면 <span class="gh">Wi-Fi 버튼 + 볼륨 − 버튼</span> 동시에 <span class="gh">10초</span>.' },
+ { num:'STEP 02', title:'확인', desc:'표시등 깜빡 = 완료!' },
+ ], warning:'SoundTouch 앱 지원 종료.'
+ }},
+ 'screen-st30': { tag:'SoundTouch 30', cat:'homeaudio', discontinued:true, reset:{
+ title:'공장 초기화',
+ steps:[
+ { num:'STEP 01', title:'버튼 조작', desc:'뒷면 <span class="gh">Wi-Fi 버튼 + 볼륨 − 버튼</span> 동시에 <span class="gh">10초</span>.' },
+ { num:'STEP 02', title:'확인', desc:'표시등 깜빡 = 완료!' },
+ ], warning:'SoundTouch 앱 지원 종료.'
+ }},
+ },
+};
+
+// ════════════════════════════════════════════════════
+// 상태
+// ════════════════════════════════════════════════════
+const S = { symptom:'', productKey:'', productTitle:'', productCat:'' };
+
+// 제품 빠른 검색 맵
+const PMAP = {};
+Object.values(BOSE_DATA.menus).forEach(m => {
+ (m.items||[]).forEach(i => {
+ if (i.screen) PMAP[i.title] = { screen:i.screen, cat:m.cat, discontinued:!!i.discontinued };
+ });
+});
+
+// ════════════════════════════════════════════════════
+// UI 유틸
+// ════════════════════════════════════════════════════
+const body = () => document.getElementById('chatBody');
+
+function scrollBot() {
+ const el = body();
+ setTimeout(() => el.scrollTop = el.scrollHeight, 80);
+}
+
+function addMsg(html, type='bot', delay=0) {
+ return new Promise(r => setTimeout(() => {
+ const el = body();
+ const row = document.createElement('div');
+ row.className = 'msg-row ' + type + ' fin';
+ if (type === 'bot') {
+ row.innerHTML = '<div class="avatar">B</div><div class="bubble bot">' + html + '</div>';
+ } else {
+ row.innerHTML = '<div class="bubble user">' + html + '</div>';
+ }
+ el.appendChild(row); scrollBot(); r();
+ }, delay));
+}
+
+function addChips(chips, delay=0) {
+ return new Promise(r => setTimeout(() => {
+ const el = body();
+ const row = document.createElement('div');
+ row.className = 'chips fin';
+ row.innerHTML = chips.map(c =>
+ '<button class="chip '+(c.cls||'')+'" onclick="'+c.fn+'">'+c.label+'</button>'
+ ).join('');
+ el.appendChild(row); scrollBot(); r();
+ }, delay));
+}
+
+function typing(ms=700) {
+ return new Promise(r => {
+ const el = body();
+ const row = document.createElement('div');
+ row.className = 'typing-row fin'; row.id = 'tyRow';
+ row.innerHTML = '<div class="avatar">B</div><div class="typing-dots"><span></span><span></span><span></span></div>';
+ el.appendChild(row); scrollBot();
+ setTimeout(() => { const t = document.getElementById('tyRow'); if(t)t.remove(); r(); }, ms);
+ });
+}
+
+function rmChips() { body().querySelectorAll('.chips').forEach(e => e.remove()); }
+
+// ════════════════════════════════════════════════════
+// 시작 화면 — BOSE 로고 + 2버튼
+// ════════════════════════════════════════════════════
+function showStartScreen() {
+ const el = body();
+ el.innerHTML = '';
+ const ss = document.createElement('div');
+ ss.className = 'start-screen';
+ ss.innerHTML = `
+ <div class="ss-logo-wrap">
+ <div class="ss-logo">BO<span>SE</span></div>
+ <div class="ss-tagline">도우미 서비스</div>
+ </div>
+ <div class="ss-question">무엇을 도와드릴까요? </div>
+ <div class="ss-btns">
+ <button class="ss-btn primary" onclick="startChat('list')">
+ <span class="ss-btn-icon"></span> 제품 목록 보기
+ </button>
+ <button class="ss-btn secondary" onclick="startChat('find')">
+ <span class="ss-btn-icon"></span> 내 제품 찾기
+ </button>
+ <button class="ss-btn secondary" onclick="showServiceCenter()">
+ <span class="ss-btn-icon"></span> 서비스센터 안내
+ </button>
+ </div>`;
+ el.appendChild(ss);
+}
+
+function doReset() {
+ Object.assign(S, { symptom:'', productKey:'', productTitle:'', productCat:'' });
+ showStartScreen();
+}
+
+
+
+// ════════════════════════════════════════════════════
+// QC Ultra 2세대 사용 가이드 데이터
+// ════════════════════════════════════════════════════
+const QC_ULTRA2_MANUAL = {
+  battery: {
+    keywords: ['배터리','사용시간','사용 시간','몇시간','몇 시간','급속충전','급속 충전','충전 시간'],
+    title: 'QC Ultra 2세대 배터리 사용 시간',
+    content:
+      '<span class="sc"><span class="sn">ANC 켜짐 + 몰입형 오디오 꺼짐</span><span class="st">최대 30시간</span></span>' +
+      '<span class="sc"><span class="sn">ANC 켜짐 + 몰입형 오디오 켜짐</span><span class="st">최대 23시간</span></span>' +
+      '<span class="sc"><span class="sn">ANC 꺼짐</span><span class="st">최대 45시간</span></span>' +
+      '<span class="sc"><span class="sn">급속 충전</span><span class="st">15분 충전으로 최대 3시간 사용 가능</span></span>'
+  },
+  buttons: {
+    keywords: ['버튼','조작','다기능','볼륨 스트립','스트립','전원 버튼','블루투스 버튼','버튼 사용법','어떻게 켜','어떻게 끄'],
+    title: 'QC Ultra 2세대 버튼 조작법',
+    content:
+      '<span class="sc"><span class="sn">블루투스/전원 버튼 (오른쪽 이어컵 뒷면)</span>' +
+      '<span class="st">전원 켜기 / 끄기 / 페어링</span>' +
+      '<span class="sd">짧게 누름: 전원 켜기<br>길게 누름: 전원 끄기<br>계속 누름: 페어링 모드 (파란 불 깜빡임)</span></span>' +
+      '<span class="sc"><span class="sn">다기능 버튼 (오른쪽 이어컵 아랫면)</span>' +
+      '<span class="st">재생 / 트랙 이동 / 통화</span>' +
+      '<span class="sd">1번: 재생/일시정지, 전화 받기/끊기<br>2번: 다음 트랙<br>3번: 이전 트랙<br>길게: 청취 모드 순환</span></span>' +
+      '<span class="sc"><span class="sn">볼륨 스트립 (오른쪽 이어컵 뒷면 세로 줄)</span>' +
+      '<span class="st">볼륨 조절 / 단축키</span>' +
+      '<span class="sd">위로 쓸기: 볼륨 올리기<br>아래로 쓸기: 볼륨 내리기<br>길게 터치: 단축키 실행 (Bose 앱에서 설정)</span></span>'
+  },
+  modes: {
+    keywords: ['청취 모드','노이즈캔슬링','ANC','aware','quiet','immersion','cinema','투명 모드','공간음향','몰입형'],
+    title: 'QC Ultra 2세대 청취 모드',
+    content:
+      '<span class="sc"><span class="sn">Quiet 모드 (기본값)</span><span class="st">완전한 노이즈 캔슬링</span><span class="sd">외부 소음을 최대한 차단해요. ANC 최대 성능을 발휘해요.</span></span>' +
+      '<span class="sc"><span class="sn">Aware 모드</span><span class="st">투명 모드 (주변음 허용)</span><span class="sd">주변 소리를 들으면서 음악도 즐길 수 있어요. 큰 소음은 ActiveSense가 자동으로 줄여줘요.</span></span>' +
+      '<span class="sc"><span class="sn">Immersion 모드</span><span class="st">공간음향 (음악 최적화)</span><span class="sd">ANC + 몰입형 오디오(Motion)로 음악이 입체적으로 들려요.</span></span>' +
+      '<span class="sc"><span class="sn">Cinema 모드</span><span class="st">공간음향 (영상 최적화)</span><span class="sd">ANC + 몰입형 오디오(Still)로 영화관 같은 경험을 제공해요.</span></span>' +
+      '<div class="ib">Bose 앱에서 최대 7개의 커스텀 모드를 만들 수 있어요.</div>'
+  },
+  bluetooth: {
+    keywords: ['멀티포인트','두 기기','2대','fast pair','페어링 방법','연결 방법'],
+    title: 'QC Ultra 2세대 블루투스 연결',
+    content:
+      '<span class="sc"><span class="sn">처음 연결하기</span><span class="st">페어링 방법</span>' +
+      '<span class="sd">Bose 앱 (권장): 앱 설치 후 전원 켜면 자동 감지<br>수동: 전원 끈 상태에서 블루투스 버튼 길게 눌러 파란 불 깜빡이면 폰 블루투스에서 BOSE QC ULTRA 2 HP 선택<br>Fast Pair (Android): 페어링 모드 상태에서 Android 기기 가까이 두면 팝업 알림 표시</span></span>' +
+      '<span class="sc"><span class="sn">멀티포인트 (2대 동시 연결)</span><span class="st">최대 2개 기기 동시 연결 가능</span>' +
+      '<span class="sd">음악은 한 기기에서만 재생되지만 전화는 두 기기 모두 수신 가능해요.<br>현재 기기 음악 일시정지 후 다른 기기에서 재생하면 자동 전환돼요.</span></span>' +
+      '<div class="ib">최대 6개 기기를 기억할 수 있어요.</div>'
+  },
+  charging: {
+    keywords: ['충전','충전 방법','usb-c','충전 케이블','충전 포트','충전 중','주황색 불','완충'],
+    title: 'QC Ultra 2세대 충전 방법',
+    content:
+      '<span class="sc"><span class="sn">STEP 01</span><span class="st">USB-C 케이블 연결</span><span class="sd">왼쪽 이어컵 포트에 케이블 연결 후 컴퓨터나 USB 충전기(최소 0.5A / 2.5W)에 연결하세요.</span></span>' +
+      '<span class="sc"><span class="sn">STEP 02</span><span class="st">상태등 확인</span><span class="sd">충전 중: 주황색 켜짐<br>완충: 흰색으로 변경</span></span>' +
+      '<div class="wn">배터리가 완전히 방전된 경우, 케이블 연결 후 전원 버튼을 눌러야 켜져요. AUX 케이블만으로는 사용이 불가해요.</div>'
+  },
+  led: {
+    keywords: ['상태등','LED','불빛','불 색','깜빡','파란불','주황불','흰불','오류'],
+    title: 'QC Ultra 2세대 상태등 안내',
+    content:
+      '<span class="sc"><span class="sn">파란색 천천히 깜빡임</span><span class="st">블루투스 연결 대기 (페어링 모드)</span></span>' +
+      '<span class="sc"><span class="sn">파란색 5초 켜짐</span><span class="st">블루투스 연결 완료</span></span>' +
+      '<span class="sc"><span class="sn">흰색 켜짐</span><span class="st">배터리 완충 상태</span></span>' +
+      '<span class="sc"><span class="sn">주황색 켜짐</span><span class="st">배터리 낮음~중간 또는 충전 중</span></span>' +
+      '<span class="sc"><span class="sn">흰색 2번 깜빡임</span><span class="st">전원 꺼짐 또는 페어링 목록 초기화 완료</span></span>' +
+      '<span class="sc"><span class="sn">주황색 빠르게 깜빡임 (5초)</span><span class="st">공장 초기화 진행 중</span></span>' +
+      '<span class="sc"><span class="sn">주황색/흰색 교대 깜빡임</span><span class="st">오류 발생 — 고객센터 문의 필요</span></span>'
+  },
+  wired: {
+    keywords: ['유선','aux','오디오 케이블','3.5mm','2.5mm','유선 연결','케이블 연결'],
+    title: 'QC Ultra 2세대 유선 연결',
+    content:
+      '<span class="sc"><span class="sn">AUX 오디오 케이블</span><span class="st">2.5mm → 3.5mm 연결</span>' +
+      '<span class="sd">전원을 켠 상태에서 동봉 케이블의 2.5mm 단자를 왼쪽 이어컵에, 3.5mm 단자를 재생 기기에 연결하세요.</span></span>' +
+      '<span class="sc"><span class="sn">USB-C 오디오</span><span class="st">충전 + 고음질 동시 가능</span>' +
+      '<span class="sd">USB-C로 연결하면 충전과 고음질 오디오를 동시에 즐길 수 있어요.<br>연결 중 블루투스 버튼 누르면 블루투스/USB 오디오 모드 전환 가능해요.</span></span>' +
+      '<div class="wn">AUX 연결 시 버튼 조작과 마이크 기능이 비활성화돼요.</div>'
+  },
+  reset: {
+    keywords: ['리셋','초기화','소프트 리셋','공장 초기화','안 켜져','먹통','재부팅'],
+    title: 'QC Ultra 2세대 리셋 방법',
+    content:
+      '<span class="sc"><span class="sn">소프트 리셋 (설정 유지)</span><span class="st">재부팅 — 페어링 기록 유지</span>' +
+      '<span class="sd">1. 폰 블루투스에서 헤드폰 삭제<br>2. USB-C 케이블을 왼쪽 이어컵에 연결<br>3. 블루투스/전원 버튼 누른 채로 케이블 반대쪽 전원 연결<br>4. 상태등 흰색 3초 깜빡이면 완료</span></span>' +
+      '<span class="sc"><span class="sn">공장 초기화 (모든 설정 삭제)</span><span class="st">처음 구매 상태로 복구</span>' +
+      '<span class="sd">1. Bose 앱 + 폰 블루투스에서 헤드폰 삭제<br>2. 블루투스/전원 버튼 + 다기능 버튼 동시에 15초 누름<br>3. 5초 후 주황색 깜빡임 시작 → 15초 되면 흰색 불<br>4. 파란 불 천천히 깜빡이면 초기화 완료</span></span>'
+  },
+  care: {
+    keywords: ['청소','보관','케이스','관리','세척','이어패드 청소'],
+    title: 'QC Ultra 2세대 관리 및 보관',
+    content:
+      '<span class="sc"><span class="sn">케이스 보관 방법</span><span class="st">접는 순서</span>' +
+      '<span class="sd">1. 양쪽 이어컵을 안쪽으로 돌려 평평하게 눕히기<br>2. 이어컵을 헤드밴드 방향으로 밀어 올리기<br>3. 왼쪽 이어컵을 헤드밴드 쪽으로 접어 케이스에 넣기</span></span>' +
+      '<span class="sc"><span class="sn">청소 방법</span><span class="st">부드러운 천으로 닦기</span>' +
+      '<span class="sd">물에 살짝 적신 부드러운 천으로 닦아주세요.<br>세정제 사용이나 이어컵 내부, 포트에 물이 들어가지 않도록 주의해 주세요.</span></span>'
+  },
+  box: {
+    keywords: ['구성품','박스','포함','들어있','패키지','케이블 포함','뭐가 들어'],
+    title: 'QC Ultra 2세대 박스 구성품',
+    content:
+      '<span class="sc"><span class="st">박스 구성품</span>' +
+      '<span class="sd">QC Ultra 헤드폰 2세대<br>하드 보관 케이스<br>USB-C 충전 케이블<br>2.5mm to 3.5mm 오디오 케이블<br>안전 가이드</span></span>'
+  },
+};
+
+// QC Ultra 2세대 관련 질문 감지 및 응답
+function findManualAnswer(txt) {
+  const lo = txt.toLowerCase();
+  // QC Ultra 2세대 언급 여부 — 언급 없어도 일반 질문이면 답변
+  const isQcUltra2 = lo.includes('ultra 2') || lo.includes('울트라 2') || lo.includes('2세대') || lo.includes('qcutra2');
+  for (const [key, item] of Object.entries(QC_ULTRA2_MANUAL)) {
+    if (item.keywords.some(k => lo.includes(k))) {
+      return item;
+    }
+  }
+  return null;
+}
+
+// ════════════════════════════════════════════════════
+// 서비스센터 안내
+// ════════════════════════════════════════════════════
+const SERVICE_CENTER = {
+ name: '세기HE BOSE 공식 서비스센터',
+ address: '서울시 중구 소파로 127번지(남산동 2가 23) 세기빌딩',
+ tel: '02-3446-3514',
+ hours: '평일 오전 10시 ~ 오후 6시 (주말·공휴일 휴무)',
+ subway: '4호선 명동역 1번 출구 → 남산 케이블카 방면 도보 약 10분',
+ bus: '104, 105, 263, 421, 507, 604, 6001, 6015, 7011번 — 명동역 입구 하차',
+ car: '명동역에서 남산 방면 우회전 → 소파로(남산 케이블카) 방면 직진 → 명지빌딩 앞길 우회전 → 갈림길 좌회전 → BOSE 서비스센터 주차장',
+ parking: '명지빌딩 사이길 우회전 후 갈림길에서 좌회전하시면 BOSE 서비스센터 주차장이 나옵니다.',
+ mapUrl: 'https://map.kakao.com/link/search/세기빌딩+서울+중구+소파로+127',
+};
+
+async function showServiceCenter() {
+ body().innerHTML = '';
+ await typing(500);
+ await addMsg(' BOSE 공식 서비스센터 안내드릴게요! ');
+ await typing(400);
+
+ let html = '<div class="ib">';
+ html += '<div class="it"> 세기HE BOSE 공식 서비스센터</div>';
+ html += '<span style="font-size:11px;color:var(--text3);letter-spacing:1px;text-transform:uppercase">주소</span><br>';
+ html += '서울시 중구 소파로 127번지<br>(남산동 2가 23) 세기빌딩<br><br>';
+ html += '<span style="font-size:11px;color:var(--text3);letter-spacing:1px;text-transform:uppercase">전화</span><br>';
+ html += '<b>02-3446-3514</b><br><br>';
+ html += '<span style="font-size:11px;color:var(--text3);letter-spacing:1px;text-transform:uppercase">운영시간</span><br>';
+ html += '평일 오전 10시 ~ 오후 6시<br>';
+ html += '<span style="color:#8a5500">주말 · 공휴일 휴무</span>';
+ html += '</div>';
+ await addMsg(html);
+
+ await typing(400);
+ await addMsg('어떻게 오실 예정이에요? 편한 교통편을 선택해 주세요 ');
+ await addChips([
+ { label:' 지하철로 올게요', fn:"showRoute('subway')" },
+ { label:' 버스로 올게요', fn:"showRoute('bus')" },
+ { label:' 차로 올게요', fn:"showRoute('car')" },
+ { label:' 전화 문의', fn:"location.href='tel:0234463514'", cls:'call' },
+ { label:' 처음으로', fn:'doReset()' },
+ ], 200);
+}
+
+async function showRoute(type) {
+ rmChips();
+ const routes = {
+ subway: {
+ label: ' 지하철',
+ content: '<span class="sc"><span class="sn">4호선</span><span class="st">명동역 1번 출구</span><span class="sd">남산 케이블카 방면으로 도보 약 <b>10분</b></span></span>'
+ },
+ bus: {
+ label: ' 버스',
+ content: '<span class="sc"><span class="sn">버스번호</span><span class="st">명동역 입구 하차</span><span class="sd">104 · 105 · 263 · 421 · 507<br>604 · 6001 · 6015 · 7011</span></span>'
+ },
+ car: {
+ label: ' 자가용',
+ content: '<span class="sc"><span class="sn">명동역 방면</span><span class="st">찾아오는 길</span><span class="sd">명동역 → 남산 방면 <b>우회전</b><br>→ 소파로(남산 케이블카) 방면 <b>직진</b><br>→ 명지빌딩 앞길 <b>우회전</b><br>→ 갈림길에서 <b>좌회전</b><br>→ BOSE 서비스센터 주차장</span></span>' +
+ '<span class="wn">🅿 <b>주차 안내</b><br>명지빌딩 사이길 우회전 후 갈림길에서 좌회전하시면 BOSE 서비스센터 주차장이 나옵니다.</span>'
+ }
+ };
+ const r = routes[type];
+ await addMsg(r.label, 'user');
+ await typing(500);
+ await addMsg(r.content);
+ await addChips([
+ { label:' 지도 열기', fn:"window.open('https://map.kakao.com/link/search/세기빌딩 서울 중구 소파로 127','_blank')" },
+ { label:' 02-3446-3514', fn:"location.href='tel:0234463514'", cls:'call' },
+ { label:'← 다른 교통편', fn:'showServiceCenter()' },
+ { label:' 처음으로', fn:'doReset()' },
+ ], 200);
+}
+
+// ── 텍스트에서 센터 문의 감지 ──────────────────────────
+const CENTER_KW = ['서비스센터','서비스 센터','센터','주소','위치','찾아가','오는길','오는 길','주차','지하철','버스','전화번호','운영시간','영업시간','몇시','문의'];
+
+// ════════════════════════════════════════════════════
+// 채팅 시작
+// ════════════════════════════════════════════════════
+async function startChat(mode) {
+ body().innerHTML = '';
+
+ if (mode === 'list') {
+ // 제품 목록 보기 → 카테고리 선택
+ await typing(400);
+ await addMsg('어떤 종류의 제품인가요? ');
+ await addChips([
+ { label:' 헤드폰', fn:"showMenu('screen-headphone')" },
+ { label:' 이어버드', fn:"showMenu('screen-earbud')" },
+ { label:' 스피커', fn:"showMenu('screen-speaker')" },
+ { label:' 홈시어터', fn:"showMenu('screen-soundbar')" },
+ { label:' 홈오디오', fn:"showMenu('screen-homeaudio')" },
+ ], 200);
+
+ } else {
+ // 내 제품 찾기 → 사진 촬영 안내 먼저
+ await typing(600);
+ await addMsg('제품 사진을 찍으면 바로 확인해 드릴게요! ');
+ await typing(500);
+ await addMsg(
+ '<b>이렇게 찍으면 잘 인식돼요</b><br><br>' +
+ '① <b>제품 전체</b>가 화면에 들어오게<br>' +
+ '② <b>모델명</b>이 적힌 부분이 보이게<br>' +
+ '③ <b>밝은 곳</b>에서 촬영<br>' +
+ '④ 흔들리지 않게 <b>가까이</b>에서<br><br>' +
+ '<span style="font-size:11px;color:var(--text3)">모델명은 보통 제품 하단·측면 스티커 또는 이어컵 안쪽에 있어요</span>'
+ );
+ await addChips([
+ { label:' 사진 찍기 / 업로드', fn:"document.getElementById('photoInput').click()", cls:'photo' },
+ { label:' 목록에서 직접 찾기', fn:"startChat('list')" },
+ ], 200);
+ }
+}
+
+// ════════════════════════════════════════════════════
+// 제품 목록 흐름
+// ════════════════════════════════════════════════════
+async function showMenu(menuId) {
+  rmChips();
+  const menu = BOSE_DATA.menus[menuId];
+  if (!menu) return;
+  const catLabels = { 'screen-headphone':'헤드폰', 'screen-earbud':'이어버드', 'screen-speaker':'스피커', 'screen-soundbar':'홈시어터', 'screen-homeaudio':'홈오디오' };
+  await addMsg(catLabels[menuId]||menu.title, 'user');
+  await typing(400);
+  await addMsg('제품을 선택해 주세요!');
+  await addProductGrid(menu, 'pickProduct', menuId);
+}
+
+function addProductGrid(menu, fnPrefix, menuId, delay=200) {
+  return new Promise(r => setTimeout(() => {
+    const iconMap = {
+      'screen-headphone':'🎧','screen-earbud':'🎵',
+      'screen-speaker':'🔊','screen-soundbar':'📺','screen-homeaudio':'🎼'
+    };
+    if (!menuId) menuId = Object.keys(BOSE_DATA.menus).find(k => BOSE_DATA.menus[k] === menu) || '';
+    const catIcon = iconMap[menuId] || '🎵';
+    const el = body();
+    const grid = document.createElement('div');
+    grid.className = 'product-grid fin';
+    menu.items.forEach(i => {
+      const card = document.createElement('div');
+      card.className = 'product-card' + (i.discontinued ? ' discontinued' : '');
+      const fn = fnPrefix === 'pickProduct'
+        ? "pickProduct('" + i.title.replace(/'/g,"\'") + "','" + i.screen + "','" + menu.cat + "'," + !!i.discontinued + ")"
+        : "btPickProduct('" + i.title.replace(/'/g,"\'") + "','" + i.screen + "','" + menu.cat + "'," + !!i.discontinued + ")";
+      card.setAttribute('onclick', fn);
+      card.innerHTML =
+        '<div class="product-card-icon">' + catIcon + '</div>' +
+        (i.discontinued ? '<span class="product-card-badge">단종</span>' : '') +
+        '<div class="product-card-name">' + i.title + '</div>' +
+        '<div class="product-card-sub">' + (i.sub||'') + '</div>';
+      grid.appendChild(card);
+    });
+    el.appendChild(grid);
+    scrollBot();
+    r();
+  }, delay));
+}
+
+
+// ════════════════════════════════════════════════════
+// 증상 흐름
+// ════════════════════════════════════════════════════
+async function pickSymptom(sym) {
+  rmChips();
+  S.symptom = sym;
+  await addMsg(sym, 'user');
+  await typing(500);
+
+  // 제품이 이미 선택된 상태면 바로 초기화로
+  if (S.productKey && BOSE_DATA.guides[S.productKey]) {
+    await addMsg('알겠어요. 공장 초기화를 먼저 시도해 보세요!');
+    await showReset();
+    return;
+  }
+
+  // 제품 미선택 → 제품 선택 안내
+  await addMsg('제품명을 알고 계신가요?');
+  await addChips([
+    { label:'알아요 — 직접 선택', fn:"startChat('list')" },
+    { label:'모르겠어요',         fn:"guideToFind()" },
+  ], 200);
+}
+
+async function guideToFind() {
+ rmChips();
+ await addMsg('모르겠어요', 'user');
+ await typing(500);
+ await addMsg('제품 사진을 찍으면 바로 확인해 드릴게요! <br><br><b>이렇게 찍으면 잘 인식돼요:</b><br>• 제품 전체가 보이게<br>• 모델명 표시 부분 포함<br>• 밝은 곳에서 촬영');
+ await addChips([
+ { label:' 제품 사진 찍기', fn:"document.getElementById('photoInput').click()", cls:'photo' },
+ { label:' 목록에서 직접 찾기', fn:"startChat('list')" },
+ ], 200);
+}
+
+// ════════════════════════════════════════════════════
+// 제품 확인 → 초기화 안내
+// ════════════════════════════════════════════════════
+async function pickProduct(title, screen, cat, disc) {
+  rmChips();
+  S.productTitle = title; S.productKey = screen; S.productCat = cat;
+  await addMsg(title, 'user');
+  await typing(500);
+
+  let html = '<b>' + title + '</b>';
+  if (disc) html += '<span class="disc-b"> 단종 제품입니다. 완제품 구조로 부분 수리가 어렵고 지원이 제한될 수 있어요.</span>';
+  await addMsg(html);
+  await typing(400);
+  await addMsg('어떤 문제가 있으신가요?');
+  await addChips([
+    { label:'블루투스 연결이 안 돼요',    fn:'askBtSituation()' },
+    { label:'소리가 안 나요',             fn:"pickSymptom('소리가 안 나요')" },
+    { label:'충전이 안 돼요',             fn:"pickSymptom('충전이 안 돼요')" },
+    { label:'배터리가 빨리 닳아요',       fn:"pickSymptom('배터리가 빨리 닳아요')" },
+    { label:'버튼이 작동 안 해요',        fn:"pickSymptom('버튼이 작동 안 해요')" },
+    { label:'기타 증상이에요',            fn:"pickSymptom('기타 증상')" },
+    { label:'← 다시 선택',               fn:"startChat('list')" },
+  ], 200);
+}
+
+async function showReset() {
+ rmChips();
+ const guide = BOSE_DATA.guides[S.productKey];
+ if (!guide || !guide.reset) {
+ await addMsg('해당 제품 가이드를 찾지 못했어요. 고객센터로 문의해 주세요.');
+ return;
+ }
+ const r = guide.reset;
+ await typing(700);
+ let html = '<b>' + guide.tag + ' — ' + r.title + '</b><br><br>';
+ r.steps.forEach(s => {
+ html += '<span class="sc"><span class="sn">'+s.num+'</span><span class="st">'+s.title+'</span><span class="sd">'+s.desc+'</span></span>';
+ });
+ if (r.warning) html += '<span class="wn"> ' + r.warning + '</span>';
+ await addMsg(html);
+ await addChips([
+ { label:'초기화 성공했어요', fn:'afterSuccess()' },
+ { label:'아직도 같은 증상',  fn:'afterFail()' },
+ ], 300);
+}
+
+// ════════════════════════════════════════════════════
+// 성공 / 실패
+// ════════════════════════════════════════════════════
+async function afterSuccess() {
+  rmChips();
+  await addMsg('초기화 성공했어요', 'user');
+  await typing(500);
+  await addMsg('다행이에요, 정말 다행이에요!<br>문제가 해결됐군요.<br><br>혹시 초기화 이후에도 같은 증상이 재발하면<br>제품 자체에 이상이 있을 수 있어요.<br>그럴 땐 전문가의 점검을 받아보시는 걸 권장드려요.');
+  await typing(400);
+
+  // 단종 제품이면 보상교체 안내 추가
+  const isDisc = S.productKey && BOSE_DATA.guides[S.productKey] && BOSE_DATA.guides[S.productKey].discontinued;
+  if (isDisc) {
+    await addMsg('<span class="wn"><b>단종 제품 보상교체 안내</b><br>단종 제품은 동일 제품으로의 교체가 어려워요.<br>단, 제품 불량으로 확인되면 현재 출시 중인 제품을<br><b>약 25% 할인된 가격으로 보상 교체</b> 받으실 수 있어요.<br>증상이 재발하면 꼭 센터에 문의해 주세요!</span>');
+  }
+
+  await typing(300);
+  await addMsg('혹시 지금 바로 접수하시겠어요?');
+  await addChips([
+    { label:'서비스센터 직접 방문', fn:'visitService()' },
+    { label:'택배로 접수할게요',    fn:'askPurchaseDate()' },
+    { label:'괜찮아요, 처음으로',   fn:'doReset()' },
+  ], 200);
+}
+
+async function afterFail() {
+  rmChips();
+  await addMsg('아직도 같은 증상이에요', 'user');
+  await typing(700);
+  await addMsg('공장 초기화까지 진행하셨는데도 같은 증상이 계속된다면,<br><b>제품 자체에 이상이 있을 가능성이 높아요.</b><br>전문가의 점검이 필요한 상태예요.');
+  await typing(500);
+
+  const isEarHead = ['headphone','earbuds'].includes(S.productCat);
+  const isDisc = S.productKey && (
+    ['screen-wave-st','screen-wave-mod','screen-wave-cls','screen-st10','screen-st20','screen-st30'].includes(S.productKey) ||
+    (BOSE_DATA.guides[S.productKey] && BOSE_DATA.guides[S.productKey].discontinued)
+  );
+
+  let html = '<b>AS 접수 전 안내사항</b><br><br>';
+
+  if (isDisc && isEarHead) {
+    // 단종 + 이어폰/헤드폰
+    html += '<span class="sc"><span class="st">단종 이어폰 · 헤드폰 안내</span><span class="sd">단종 제품은 동일 제품으로의 교체가 어려워요.<br>단, <b>제품 불량으로 확인되면</b> 현재 출시 중인 제품을<br><b>약 25% 할인된 가격으로 보상 교체</b> 받으실 수 있어요.</span></span>';
+  } else if (isDisc) {
+    // 단종 + 기타 제품
+    html += '<span class="sc"><span class="st">단종 제품 안내</span><span class="sd">단종 제품은 부품 수급이 어려워 수리가 제한될 수 있어요.<br>단, <b>제품 불량으로 확인되면</b> 현재 출시 중인 제품을<br><b>약 25% 할인된 가격으로 보상 교체</b> 받으실 수 있어요.<br>반드시 센터에 문의해 주세요.</span></span>';
+  } else if (isEarHead) {
+    // 현행 이어폰/헤드폰
+    html += '<span class="sc"><span class="st">이어폰 · 헤드폰 수리 안내</span><span class="sd">이어폰·헤드폰은 완제품 구조라서 부분 수리가 어려울 수 있어요.<br>제품 불량으로 확인되면 <b>보상 교체</b>로 처리해 드려요!</span></span>';
+  } else {
+    html += '<span class="sc"><span class="st">제품 불량으로 확인되면</span><span class="sd">무상 AS 기간(1년) 이내라면 <b>리퍼가 아닌 새 제품으로 교환</b>해 드려요!</span></span>';
+  }
+
+  html += '<span class="wn"><b>아래 경우는 무상 AS가 어려워요 (고객 과실)</b><br>• 침수 — 물에 젖은 경우<br>• 파손 — 외부 충격으로 손상된 경우<br>• 분실 — 부품이나 액세서리를 잃어버린 경우<br><span style="font-size:11px">위 경우에는 유상 수리로만 진행이 가능한 점 양해 부탁드려요</span></span>';
+  await addMsg(html);
+  await typing(400);
+  await addMsg('접수 방법을 선택해 주세요.<br><span style="font-size:12px;color:var(--text3)">직접 방문 또는 택배 접수 모두 가능해요</span>');
+  await addChips([
+    { label:'서비스센터 직접 방문', fn:'visitService()' },
+    { label:'택배로 접수할게요',    fn:'askPurchaseDate()' },
+  ], 300);
+}
+
+// ════════════════════════════════════════════════════
+// 직접 방문 흐름
+// ════════════════════════════════════════════════════
+async function visitService() {
+ rmChips();
+ await addMsg('서비스센터 직접 방문', 'user');
+ await typing(600);
+ await addMsg('방문하실 때 아래 두 가지를 꼭 지참해 주세요!<br><br>' +
+  '<span class="sc"><span class="st">📦 제품 지참</span><span class="sd">헤드폰 본체와 함께 케이블 등 구성품도 가져오시면 더 빠른 점검이 가능해요.</span></span>' +
+  '<span class="sc"><span class="st">🧾 구매 영수증 지참</span><span class="sd">무상 AS 여부 확인을 위해 구매 영수증이 반드시 필요해요.<br>• 종이 영수증 — 그대로 지참<br>• 온라인 구매 — 구매 내역 화면을 접수처에 직접 보여주시거나 캡처본을 지참하시면 돼요.</span></span>'
+ );
+ await typing(400);
+ await addMsg('혹시 중고로 구매하셨거나 선물 받은 제품인가요?');
+ await addChips([
+  { label:'아니요, 제가 직접 구매했어요', fn:'showServiceCenter()' },
+  { label:'중고 구매 / 선물 받은 제품이에요', fn:'usedProductWarn()' },
+ ], 200);
+}
+
+async function usedProductWarn() {
+ rmChips();
+ await addMsg('중고 구매 / 선물 받은 제품', 'user');
+ await typing(700);
+ await addMsg('당근마켓, 크림, 기타 앱, 개인 거래 등을 통한 중고 구매나 선물 받은 제품의 경우,<br><b>고객 권리 확인이 어려울 수 있는 점</b> 미리 양해 부탁드려요.');
+ await typing(500);
+ let html = '<span class="wn"><b>⚠️ 영수증이 없으면 무상 AS가 어려울 수 있어요</b><br>' +
+  '전문가가 제품을 확인했을 때 구매처가 불분명하면<br>무상 AS 처리가 어려울 수 있어요.<br><br>' +
+  '<b>이렇게 해보세요</b><br>' +
+  '• 판매자에게 구매 영수증을 요청해 동봉하거나 직접 지참하시면 무상 AS가 가능할 수 있어요.<br>' +
+  '• 선물 받은 제품이라도 접수 시 영수증 요청이 있을 수 있어요.<br>번거로우시더라도 구매자(선물 해주신 분)에게 구매 내역 캡처본을 받아 첨부해 주시면 도움이 돼요.</span>';
+ await addMsg(html);
+ await typing(400);
+ await addMsg('영수증 준비가 되셨다면 서비스센터로 방문하시면 돼요!');
+ await addChips([
+  { label:'📍 서비스센터 위치 보기', fn:'showServiceCenter()' },
+  { label:'📦 택배로 접수할게요', fn:'askPurchaseDate()' },
+  { label:'처음으로', fn:'doReset()' },
+ ], 200);
+}
+
+// ════════════════════════════════════════════════════
+// AS 흐름
+// ════════════════════════════════════════════════════
+async function askPurchaseDate() {
+ rmChips();
+ await addMsg('국내 구매', 'user');
+ await typing(500);
+ await addMsg('구매하신 지 얼마나 됐나요? <br><span style="font-size:11px;color:var(--text3)">구매 시기에 따라 택배비 부담이 달라져요</span>');
+ await addChips([
+ { label:' 3개월 미만', fn:"asFlow('3mo')" },
+ { label:' 3~6개월', fn:"asFlow('6mo')" },
+ { label:' 6개월 이후', fn:"asFlow('over6')" },
+ ], 200);
+}
+
+async function asFlow(period) {
+ rmChips();
+ const lbl = { '3mo':'3개월 미만', '6mo':'3~6개월', 'over6':'6개월 이후' };
+ await addMsg(lbl[period], 'user');
+ await typing(600);
+
+ const fee = {
+ '3mo': { s:'본사 부담', r:'본사 부담', note:'지정 택배사: <b>한진택배만 가능</b>' },
+ '6mo': { s:'고객 부담', r:'본사 부담', note:'모든 택배사 가능' },
+ 'over6':{ s:'고객 부담', r:'고객 부담', note:'모든 택배사 가능' },
+ }[period];
+
+ let fhtml = '<div class="ib"><div class="it"> 택배비 안내 ('+lbl[period]+')</div>';
+ fhtml += '고객→센터: <b>'+fee.s+'</b><br>본사→고객: <b>'+fee.r+'</b><br>'+fee.note+'</div>';
+ await addMsg(fhtml);
+ await typing(300);
+ await addMsg('영수증은 어떤 형태예요?');
+ await addChips([
+ { label:' 종이 영수증', fn:"packGuide('"+period+"','receipt')" },
+ { label:' 온라인 구매 (캡처)', fn:"packGuide('"+period+"','online')" },
+ { label:' 인쇄 어려워요', fn:"packGuide('"+period+"','noprint')" },
+ { label:' 1년 초과 (불필요)', fn:"packGuide('"+period+"','none')" },
+ ], 200);
+}
+
+async function packGuide(period, rt) {
+ rmChips();
+ const rtL = { receipt:'종이 영수증', online:'온라인 캡처', noprint:'인쇄 불가', none:'영수증 불필요' };
+ await addMsg(rtL[rt], 'user');
+ await typing(600);
+
+ const tips = {
+ online: '<span class="sc"><span class="st"> 구매 내역 캡처 후 인쇄해서 동봉하세요.</span><span class="sd">주문번호·날짜가 보이면 OK</span></span>',
+ noprint: '<span class="sc"><span class="st"> 우선 접수 — 메모에 구매 날짜 기입</span><span class="sd">기사님 확인 후 필요 시 개별 연락드려요</span></span>',
+ receipt: '<span class="sc"><span class="st"> 종이 영수증을 제품과 함께 동봉하세요.</span></span>',
+ none: '<span class="sc"><span class="st"> 영수증 없이 접수 진행하세요.</span></span>',
+ };
+
+ let html = '<b> 포장 & 발송 체크리스트</b><br><br>';
+ html += tips[rt];
+ html += '<span class="sc"><span class="st"> 메모지 필수 동봉</span><span class="sd">개인정보보호법으로 발신자 정보가 가려져요.<br>꼭 메모지에 아래 내용을 적어 동봉해 주세요 <br>• 성함 · 연락처 · 주소<br>• 고장 증상 (자세히 적어주실수록 더 빠르게 처리할 수 있어요!)</span></span>';
+ html += '<span class="sc"><span class="st"> 제품 안전 포장</span><span class="sd">완충재로 꼼꼼히 감싸 파손 방지</span></span>';
+ await addMsg(html);
+ await typing(400);
+
+ if (period === '3mo') {
+ let th = '<b> 한진택배 접수 방법</b><br><br>';
+ th += '<span class="sc"><span class="st"> 전화 접수</span><span class="sd"><b>1588-0011</b> 전화 → 배송지를 <b>BOSE 서비스센터</b>로 지정</span></span>';
+ th += '<span class="sc"><span class="st"> 인터넷 접수</span><span class="sd">hanex.hanjin.co.kr 에서도 신청 가능</span></span>';
+ th += '<span class="wn"> 3개월 이내는 반드시 <b>한진택배만</b> 이용해야 해요.</span>';
+ await addMsg(th);
+ } else {
+ let th = '<span class="sc"><span class="st"> 모든 택배사 이용 가능</span><span class="sd">한진·CJ대한통운·롯데·로젠 등 편한 택배사 이용</span></span>';
+ th += '<span class="sc"><span class="st"> 수령지: 세기HE (BOSE 서비스센터)</span><span class="sd">정확한 주소는 고객센터(1588-5044) 확인 권장</span></span>';
+ await addMsg(th);
+ }
+
+ await typing(300);
+ let cs = '<div class="ib"><div class="it"> BOSE 공식 고객센터</div>전화: <b>1588-5044</b><br>운영: 평일 09:00~18:00<br>소요기간: 약 4~5일 (주말 포함 시 +1~2일)</div>';
+ await addMsg(cs);
+ await addChips([
+ { label:' 1588-0011 한진택배', fn:"location.href='tel:15880011'", cls: period==='3mo'?'call':'' },
+ { label:' 1588-5044 고객센터', fn:"location.href='tel:15885044'", cls:'call' },
+ { label:' 처음으로', fn:'doReset()' },
+ ], 200);
+}
+
+async function importWarn() {
+ rmChips();
+ await addMsg('해외 구매 / 직구', 'user');
+ await typing(700);
+ let html = '<div class="ib"><div class="it"> 해외 구매 / 직구 AS 주의</div>해외 구매·직구 제품은 <b>국내 공식 AS가 반려될 수 있어요.</b><div class="iw">• 국내 미출시 모델 → AS 불가<br>• 해외 직구 → 구입처 or 해외 센터 이용<br>• AS 택배비 전액 <b>고객 부담</b><br>• 일부 유상 수리 가능 (사전 상담 필요)</div></div>';
+ await addMsg(html);
+ await typing(300);
+ await addMsg('그래도 걱정 마세요! <br>먼저 <b>1588-5044</b>로 문의해 보시면<br>상담사분이 가능 여부를 자세히 안내해 드릴 거예요.');
+ await addChips([
+ { label:' 1588-5044 전화', fn:"location.href='tel:15885044'", cls:'call' },
+ { label:' 처음으로', fn:'doReset()' },
+ ], 200);
+}
+
+async function unknownPurchase() {
+ rmChips();
+ await addMsg('구매처를 모르겠어요', 'user');
+ await typing(600);
+ let html = '<div class="ib"><div class="it"> 구매처 확인 불가 시 안내</div>구매 이력 증빙이 없으면 <b>AS 기사님 판단</b>에 따라 결정돼요.<div class="iw">• 무상 AS 처리가 어려울 수 있어요<br>• 경우에 따라 <b>AS 반려</b>될 수 있어요<br>• 유상 수리로 전환될 수 있습니다</div></div>';
+ await addMsg(html);
+ await typing(300);
+ await addMsg('걱정 마세요! 그래도 접수는 가능해요 <br>기사님이 제품을 직접 확인한 후에 처리 가능 여부를 안내해 드릴 거예요.');
+ await addChips([
+ { label:' 그래도 접수할게요', fn:'askPurchaseDate()' },
+ { label:' 먼저 상담할게요', fn:"location.href='tel:15885044'", cls:'call' },
+ { label:' 처음으로', fn:'doReset()' },
+ ], 200);
+}
+
+
+// ════════════════════════════════════════════════════
+// 블루투스 연결 문제 — 제품 먼저 선택 → 상황 확인
+// ════════════════════════════════════════════════════
+async function askBtProduct() {
+  await typing(500);
+  await addMsg('블루투스 연결 문제가 있으시군요.<br>어떤 제품인가요?');
+  await addChips([
+    { label:'헤드폰',   fn:"showBtMenu('screen-headphone')" },
+    { label:'이어버드', fn:"showBtMenu('screen-earbud')" },
+    { label:'스피커',   fn:"showBtMenu('screen-speaker')" },
+    { label:'홈시어터', fn:"showBtMenu('screen-soundbar')" },
+    { label:'홈오디오', fn:"showBtMenu('screen-homeaudio')" },
+  ], 200);
+}
+
+async function askBtSituation() {
+  rmChips();
+  await typing(500);
+  await addMsg('블루투스 연결이 잘 안 되시는군요.<br>어떤 상황인지 조금 더 알려주실 수 있어요?');
+  await addChips([
+    { label:'새 기기에 연결이 안 돼요',       fn:"btNewDevice()" },
+    { label:'쓰던 기기에 갑자기 안 돼요',     fn:"btDropped()" },
+    { label:'두 기기 동시 연결이 안 돼요',    fn:"btMultipoint()" },
+    { label:'연결은 되는데 자꾸 끊겨요',      fn:"btKeepDisconnect()" },
+  ], 200);
+}
+
+async function btNewDevice() {
+  rmChips();
+  await addMsg('새 기기에 연결이 안 돼요', 'user');
+  await typing(600);
+  await addMsg('<b>새 기기 연결 방법</b>을 안내해 드릴게요!<br><br>' +
+    '<span class="sc"><span class="sn">방법 1 — Bose 앱 (가장 쉬워요)</span>' +
+    '<span class="st">앱으로 자동 연결</span>' +
+    '<span class="sd">Bose 앱을 설치하고 헤드폰 전원을 켜면<br>앱이 자동으로 감지해서 연결을 안내해 드려요.</span></span>' +
+    '<span class="sc"><span class="sn">방법 2 — 수동 페어링</span>' +
+    '<span class="st">블루투스 버튼 길게 눌러 페어링 모드 진입</span>' +
+    '<span class="sd">1. 헤드폰 전원을 끄세요.<br>2. 블루투스/전원 버튼을 길게 눌러 파란 불이 깜빡이면 페어링 모드예요.<br>3. 스마트폰 블루투스 설정에서 <b>BOSE QC ULTRA 2 HP</b>를 선택하세요.</span></span>' +
+    '<span class="sc"><span class="sn">방법 3 — Fast Pair (Android 전용)</span>' +
+    '<span class="st">팝업 알림으로 즉시 연결</span>' +
+    '<span class="sd">페어링 모드 상태에서 Android 기기 가까이 두면<br>화면에 팝업 알림이 떠요. 탭하면 바로 연결돼요.</span></span>'
+  );
+  await typing(300);
+  await addMsg('혹시 이미 다른 기기와 연결된 상태는 아닌가요?<br>헤드폰은 최대 <b>6개 기기</b>를 기억하고,<br>동시에 <b>2대</b>까지 연결할 수 있어요.');
+  await addChips([
+    { label:'연결됐어요, 감사해요', fn:'afterSuccess()' },
+    { label:'그래도 안 돼요', fn:'btStillFail()' },
+    { label:'처음으로', fn:'doReset()' },
+  ], 200);
+}
+
+async function btMultipoint() {
+  rmChips();
+  await addMsg('두 기기 동시 연결이 안 돼요', 'user');
+  await typing(600);
+  await addMsg('<b>멀티포인트 (2대 동시 연결) 안내</b><br><br>' +
+    '<span class="sc"><span class="sn">멀티포인트란?</span>' +
+    '<span class="st">두 기기에 동시 연결하는 기능</span>' +
+    '<span class="sd">음악은 한 기기에서만 재생되지만<br>전화는 두 기기 모두에서 받을 수 있어요.<br>현재 기기 음악을 일시정지하고 다른 기기에서 재생하면<br>자동으로 전환돼요.</span></span>' +
+    '<span class="sc"><span class="sn">설정 방법</span>' +
+    '<span class="st">Bose 앱에서 멀티포인트 활성화</span>' +
+    '<span class="sd">1. Bose 앱 실행<br>2. 내 제품 선택<br>3. 멀티포인트 설정 켜기<br>4. 두 번째 기기에서 블루투스 연결 시도</span></span>' +
+    '<div class="ib">최대 6개 기기를 기억하며, 동시에 2대까지 연결할 수 있어요.</div>'
+  );
+  await addChips([
+    { label:'해결됐어요', fn:'afterSuccess()' },
+    { label:'그래도 안 돼요', fn:'btStillFail()' },
+    { label:'처음으로', fn:'doReset()' },
+  ], 200);
+}
+
+async function btDropped() {
+  rmChips();
+  await addMsg('쓰던 기기에 갑자기 안 돼요', 'user');
+  await typing(600);
+  await addMsg('갑자기 연결이 안 될 때는 아래 순서대로 해보세요!<br><br>' +
+    '<span class="sc"><span class="sn">STEP 01</span><span class="st">기기 블루투스 껐다 켜기</span>' +
+    '<span class="sd">스마트폰 블루투스를 껐다가 다시 켠 후 연결 시도해 보세요.</span></span>' +
+    '<span class="sc"><span class="sn">STEP 02</span><span class="st">헤드폰 전원 껐다 켜기</span>' +
+    '<span class="sd">헤드폰을 완전히 껐다가 다시 켜보세요.</span></span>' +
+    '<span class="sc"><span class="sn">STEP 03</span><span class="st">블루투스 목록에서 삭제 후 재연결</span>' +
+    '<span class="sd">스마트폰 블루투스 설정에서 헤드폰을 삭제하고<br>처음부터 다시 페어링해 보세요.</span></span>'
+  );
+  await addChips([
+    { label:'해결됐어요', fn:'afterSuccess()' },
+    { label:'그래도 안 돼요', fn:'btStillFail()' },
+    { label:'처음으로', fn:'doReset()' },
+  ], 200);
+}
+
+async function btKeepDisconnect() {
+  rmChips();
+  await addMsg('연결은 되는데 자꾸 끊겨요', 'user');
+  await typing(600);
+  await addMsg('연결이 자꾸 끊길 때는 이런 원인이 많아요.<br><br>' +
+    '<span class="sc"><span class="sn">원인 1</span><span class="st">거리 또는 장애물</span>' +
+    '<span class="sd">블루투스는 약 10m 이내가 안정적이에요.<br>벽, 사람 등 장애물이 많으면 신호가 약해져요.</span></span>' +
+    '<span class="sc"><span class="sn">원인 2</span><span class="st">무선 간섭</span>' +
+    '<span class="sd">와이파이 공유기나 전자레인지 근처에서 끊김이 심해질 수 있어요.<br>위치를 바꿔서 테스트해 보세요.</span></span>' +
+    '<span class="sc"><span class="sn">원인 3</span><span class="st">여러 기기가 동시에 연결 시도</span>' +
+    '<span class="sd">이전에 연결했던 다른 기기가 자동 연결을 시도하면 끊길 수 있어요.<br>사용하지 않는 기기의 블루투스를 꺼보세요.</span></span>'
+  );
+  await addChips([
+    { label:'해결됐어요', fn:'afterSuccess()' },
+    { label:'그래도 계속 끊겨요', fn:'btStillFail()' },
+    { label:'처음으로', fn:'doReset()' },
+  ], 200);
+}
+
+async function btStillFail() {
+  rmChips();
+  await addMsg('그래도 안 돼요', 'user');
+  await typing(600);
+  // 제품이 이미 선택됐으니 바로 showReset
+  await showReset();
+}
+
+async function showBtProductMenu() {
+  rmChips();
+  await addMsg('어떤 종류의 제품인가요?');
+  await addChips([
+    { label:'헤드폰',   fn:"showBtMenu('screen-headphone')" },
+    { label:'이어버드', fn:"showBtMenu('screen-earbud')" },
+    { label:'스피커',   fn:"showBtMenu('screen-speaker')" },
+    { label:'홈시어터', fn:"showBtMenu('screen-soundbar')" },
+    { label:'홈오디오', fn:"showBtMenu('screen-homeaudio')" },
+  ], 200);
+}
+
+async function showBtMenu(menuId) {
+  rmChips();
+  const menu = BOSE_DATA.menus[menuId];
+  if (!menu) return;
+  await addMsg('제품을 선택해 주세요!');
+  await addProductGrid(menu, 'btPickProduct', menuId);
+}
+
+async function btPickProduct(title, screen, cat, disc) {
+  // pickProduct와 동일한 절차로 처리
+  await pickProduct(title, screen, cat, disc);
+}
+
+// ════════════════════════════════════════════════════
+// 사진 → Claude API 제품 인식
+// ════════════════════════════════════════════════════
+async function onPhoto(event) {
+ const file = event.target.files[0];
+ if (!file) return;
+ rmChips();
+ const reader = new FileReader();
+ reader.onload = async (e) => {
+ const el = body();
+ const row = document.createElement('div');
+ row.className = 'msg-row user fin';
+ row.innerHTML = '<div class="bubble user" style="padding:7px"><img src="'+e.target.result+'" class="img-bub" alt="제품사진"></div>';
+ el.appendChild(row); scrollBot();
+
+ await typing(1200);
+ await addMsg('잠깐만요! 사진을 분석하고 있어요 <br><span style="font-size:11px;color:var(--text3)">AI가 제품을 확인 중이에요, 조금만 기다려 주세요 </span>');
+ await typing(1500);
+ await analyzePhoto(e.target.result);
+ };
+ reader.readAsDataURL(file);
+ event.target.value = '';
+}
+
+async function analyzePhoto(b64) {
+ try {
+ const base64 = b64.split(',')[1];
+ const mtype = b64.split(';')[0].split(':')[1];
+ const plist = Object.keys(PMAP).join(', ');
+ const resp = await fetch('https://api.anthropic.com/v1/messages', {
+ method:'POST',
+ headers:{'Content-Type':'application/json'},
+ body: JSON.stringify({
+ model:'claude-sonnet-4-20250514', max_tokens:300,
+ messages:[{ role:'user', content:[
+ { type:'image', source:{ type:'base64', media_type:mtype, data:base64 } },
+ { type:'text', text:'이 BOSE 제품을 다음 목록에서 찾아 JSON으로만 답해주세요:\n'+plist+'\n\n{"found":true,"model":"목록의 정확한 제품명"} 또는 {"found":false}' }
+ ]}]
+ })
+ });
+ const data = await resp.json();
+ const txt = (data.content||[]).map(i=>i.text||'').join('').replace(/```json|```/g,'').trim();
+ let result;
+ try { result = JSON.parse(txt); } catch(e) { result = {found:false}; }
+
+ if (result.found && result.model) {
+ const matched = Object.keys(PMAP).find(k =>
+ k.toLowerCase() === result.model.toLowerCase() ||
+ k.toLowerCase().includes(result.model.toLowerCase()) ||
+ result.model.toLowerCase().includes(k.toLowerCase().split(' ').slice(0,2).join(' '))
+ );
+ if (matched) {
+ const p = PMAP[matched];
+ await addMsg('제품을 찾았어요! <br><b>'+matched+'</b> 맞나요?');
+ await addChips([
+ { label:' 맞아요', fn:"pickProduct('"+matched.replace(/'/g,"\\'")+"','"+p.screen+"','"+p.cat+"',"+p.discontinued+")" },
+ { label:' 아니에요', fn:"startChat('list')" },
+ ], 200);
+ return;
+ }
+ }
+ await addMsg('앗, 제품을 정확히 인식하지 못했어요 <br>다시 찍어보시거나, 아래에서 직접 선택해 주세요!');
+ await addChips([
+ { label:' 다시 찍기', fn:"document.getElementById('photoInput').click()", cls:'photo' },
+ { label:' 목록에서 찾기', fn:"startChat('list')" },
+ ], 200);
+ } catch(err) {
+ await addMsg('분석 중 오류가 발생했어요. 직접 선택해 주세요.');
+ startChat('list');
+ }
+}
+
+// ════════════════════════════════════════════════════
+// 텍스트 입력
+// ════════════════════════════════════════════════════
+function onSend() {
+ const el = document.getElementById('txtInput');
+ const txt = el.value.trim();
+ if (!txt) return;
+ el.value = ''; autoResize(el);
+ processText(txt);
+}
+function onKey(e) { if (e.key==='Enter'&&!e.shiftKey){ e.preventDefault(); onSend(); } }
+function autoResize(el) { el.style.height='auto'; el.style.height=Math.min(el.scrollHeight,90)+'px'; }
+
+async function processText(txt) {
+ rmChips();
+ const lo = txt.toLowerCase();
+
+  // 서비스센터 문의 감지
+  if (CENTER_KW.some(k => lo.includes(k))) {
+    await addMsg(txt, 'user');
+    await showServiceCenter();
+    return;
+  }
+
+  // 블루투스 연결 문제 감지 → 제품 선택 먼저
+  const btKw = ['블루투스','bluetooth','페어링','연결이 안','연결안','안 연결','멀티포인트','연결이 끊','연결 끊','자꾸 끊','계속 끊'];
+  if (btKw.some(k => lo.includes(k))) {
+    await addMsg(txt, 'user');
+    await askBtProduct();
+    return;
+  }
+
+  // QC Ultra 2세대 매뉴얼 질문 감지
+  const manualAnswer = findManualAnswer(txt);
+  if (manualAnswer) {
+    await addMsg(txt, 'user');
+    await typing(600);
+    await addMsg('<b>' + manualAnswer.title + '</b><br><br>' + manualAnswer.content);
+    await addChips([
+      { label:'다른 질문 있어요', fn:"document.getElementById('txtInput').focus()" },
+      { label:'처음으로', fn:'doReset()' },
+    ], 200);
+    return;
+  }
+
+  // 제품명 매칭 — 제품명 전체 또는 고유 모델번호가 포함될 때만 매칭
+  // 제품명 매칭 — 다양한 별칭/약칭 지원
+  const PROD_ALIASES = {
+    'screen-qcutra2':           ['qc ultra 헤드폰 2세대','qc ultra 2세대','울트라 헤드폰 2','울트라 2세대','qc ultra 2','울트라헤드폰2','보스 울트라 2','ultra headphone 2','qcultra2','ultra 2세대','헤드폰 2세대','qc ultra headphone 2','보스 울트라헤드폰 2','울트라헤드폰2세대','qcutra2','ultra2','헤드폰2','울트라 2','보스울트라2','qc 울트라 2','울트라헤드폰 2세대'],
+    'screen-qcutra':            ['qc ultra 헤드폰','울트라 헤드폰','qc ultra headphone','울트라헤드폰','ultra headphone','qcultra','보스 울트라'],
+    'screen-qc':                ['qc 헤드폰','qchp','qc 헤드폰','quietcomfort 헤드폰','qc헤드폰','qchp','보스 qc'],
+    'screen-qc45':              ['qc45 헤드폰','qc45','qc 45','quietcomfort 45'],
+    'screen-qc35':              ['qc35','qc 35','quietcomfort 35'],
+    'screen-qc25':              ['qc25','qc 25','quietcomfort 25'],
+    'screen-qc-ultra-earbuds-2':['qc ultra 이어버드 2세대','울트라 이어버드 2','qc ultra earbuds 2','울트라이어버드2','이어버드 2세대','ultra earbuds 2'],
+    'screen-qc-ultra-earbuds':  ['qc ultra 이어버드','울트라 이어버드','qc ultra earbuds','울트라이어버드','ultra earbuds'],
+    'screen-ultra-open-earbuds':['울트라 오픈 이어버드','울트라오픈이어버드','울트라 오픈','ultra open','오픈 이어버드','open earbuds'],
+    'screen-qc-eb-2':           ['qc 이어버드 ii','qc이어버드2','qc earbuds 2','qc earbuds ii','이어버드2','이어버드 ii'],
+    'screen-sl-flex':           ['soundlink flex','사운드링크 플렉스','sl flex','플렉스'],
+    'screen-sl-max':            ['soundlink max','sl max','사운드링크 맥스','맥스 스피커'],
+    'screen-sl-revolve':        ['soundlink revolve','sl revolve','리볼브'],
+    'screen-sl-mini':           ['soundlink mini','sl mini','사운드링크 미니','미니 스피커'],
+    'screen-sb-ultra':          ['soundbar ultra','사운드바 울트라','sb ultra'],
+    'screen-sb-900':            ['soundbar 900','사운드바 900','sb900'],
+    'screen-sb-700':            ['soundbar 700','사운드바 700','sb700'],
+    'screen-sb-600':            ['soundbar 600','사운드바 600','sb600'],
+    'screen-sb-500':            ['soundbar 500','사운드바 500','sb500'],
+    'screen-sb-300':            ['soundbar 300','사운드바 300','sb300'],
+    'screen-sb-tv':             ['bose tv speaker','tv 스피커','tv speaker'],
+    'screen-wave-st':           ['wave soundtouch','웨이브 사운드터치'],
+    'screen-st10':              ['soundtouch 10'],
+    'screen-st20':              ['soundtouch 20'],
+    'screen-st30':              ['soundtouch 30'],
+  };
+
+  let matchedScreen = null;
+  for (const [screen, aliases] of Object.entries(PROD_ALIASES)) {
+    if (aliases.some(a => lo.includes(a))) { matchedScreen = screen; break; }
+  }
+  if (matchedScreen) {
+    const mpFull = Object.keys(PMAP).find(k => PMAP[k].screen === matchedScreen || k === Object.keys(PMAP).find(k2 => PMAP[k2].screen === matchedScreen));
+    // PMAP에서 screen으로 역매칭
+    const entry = Object.entries(PMAP).find(([k,v]) => v.screen === matchedScreen);
+    if (entry) {
+      await pickProduct(entry[0], entry[1].screen, entry[1].cat, entry[1].discontinued);
+      return;
+    }
+  }
+
+  // 증상 키워드
+  const skw = ['소리','충전','배터리','버튼','잡음','노이즈','터치','안 나','안돼','안 돼','작동','먹통','깜빡'];
+  if (skw.some(k => lo.includes(k))) {
+    await pickSymptom(txt);
+    return;
+  }
+
+  // 기타
+  await addMsg(txt, 'user');
+  await typing(400);
+  await addMsg('제품명이나 증상을 입력해 주시면 도와드릴게요!');
+  await addChips([
+    { label:'제품 목록 보기', fn:"startChat('list')" },
+    { label:'내 제품 찾기',   fn:"startChat('find')" },
+  ], 200);
+}
+
+// ════════════════════════════════════════════════════
+// 시작
+// ════════════════════════════════════════════════════
+showStartScreen();
+</script>
+</body>
+</html>

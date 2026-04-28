@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BOSE 도우미 서비스 가이드</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 2cm;
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Malgun Gothic', '맑은 고딕', 'Apple SD Gothic Neo', sans-serif;
+            line-height: 1.7;
+            color: #1a1a1a;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        h1 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #1a1a1a;
+            text-align: center;
+        }
+        h2 {
+            font-size: 22px;
+            font-weight: 700;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            color: #1a1a1a;
+            page-break-after: avoid;
+        }
+        h3 {
+            font-size: 18px;
+            font-weight: 700;
+            margin-top: 25px;
+            margin-bottom: 15px;
+            color: #333;
+            page-break-after: avoid;
+        }
+        h4 {
+            font-size: 15px;
+            font-weight: 700;
+            margin-top: 20px;
+            margin-bottom: 12px;
+            color: #444;
+            page-break-after: avoid;
+        }
+        p {
+            margin-bottom: 12px;
+            text-align: justify;
+        }
+        ul, ol {
+            margin-left: 25px;
+            margin-bottom: 15px;
+        }
+        li {
+            margin-bottom: 8px;
+        }
+        strong {
+            font-weight: 700;
+            color: #000;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            page-break-inside: avoid;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #f5f5f5;
+            font-weight: 700;
+        }
+        .page-break {
+            page-break-after: always;
+        }
+        .no-break {
+            page-break-inside: avoid;
+        }
+        code {
+            background-color: #f5f5f5;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+        }
+        hr {
+            border: none;
+            border-top: 1px solid #ddd;
+            margin: 30px 0;
+        }
+        @media print {
+            body {
+                max-width: 100%;
+            }
+            h2 {
+                page-break-before: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<h1>BOSE 도우미 서비스 가이드</h1>
+
+<h2>개요</h2>
+<p>BOSE 제품의 문제 해결 및 AS 안내를 위한 대화형 웹 애플리케이션입니다.</p>
+
+<hr>
+
+<h2>주요 기능</h2>
+
+<h3>1. 제품 카테고리</h3>
+<ul>
+    <li><strong>헤드폰</strong>: QC Ultra 2세대, QC Ultra, QC, QC45, QC35, QC25</li>
+    <li><strong>이어버드</strong>: QC Ultra 이어버드 2세대, QC Ultra 이어버드, 울트라 오픈 이어버드, QC 이어버드 II</li>
+    <li><strong>스피커</strong>: 홈 스피커 시리즈, SoundLink Flex/Max/Revolve/Mini</li>
+    <li><strong>홈시어터</strong>: Soundbar Ultra/900/700/600/500/300, TV 스피커</li>
+    <li><strong>홈오디오</strong>: Wave SoundTouch, SoundTouch 10/20/30 (단종 제품 포함)</li>
+</ul>
+
+<h3>2. 문제 해결 흐름</h3>
+<p><code>시작 → 제품 선택 → 증상 선택 → 공장 초기화 안내 → 성공/실패 → AS 접수</code></p>
+
+<hr>
+
+<h2>QC Ultra 헤드폰 2세대 매뉴얼</h2>
+
+<h3>배터리 사용 시간</h3>
+<ul>
+    <li><strong>ANC 켜짐 + 몰입형 오디오 꺼짐</strong>: 최대 30시간</li>
+    <li><strong>ANC 켜짐 + 몰입형 오디오 켜짐</strong>: 최대 23시간</li>
+    <li><strong>ANC 꺼짐</strong>: 최대 45시간</li>
+    <li><strong>급속 충전</strong>: 15분 충전으로 최대 3시간 사용</li>
+</ul>
+
+<h3>버튼 조작법</h3>
+
+<h4>블루투스/전원 버튼 (오른쪽 이어컵 뒷면)</h4>
+<ul>
+    <li>짧게 누름: 전원 켜기</li>
+    <li>길게 누름: 전원 끄기</li>
+    <li>계속 누름: 페어링 모드</li>
+</ul>
+
+<h4>다기능 버튼 (오른쪽 이어컵 아랫면)</h4>
+<ul>
+    <li>1번: 재생/일시정지, 전화 받기/끊기</li>
+    <li>2번: 다음 트랙</li>
+    <li>3번: 이전 트랙</li>
+    <li>길게: 청취 모드 순환</li>
+</ul>
+
+<h4>볼륨 스트립 (오른쪽 이어컵 뒷면 세로)</h4>
+<ul>
+    <li>위로 쓸기: 볼륨 올리기</li>
+    <li>아래로 쓸기: 볼륨 내리기</li>
+    <li>길게 터치: 단축키 실행</li>
+</ul>
+
+<h3>청취 모드</h3>
+<ul>
+    <li><strong>Quiet 모드</strong>: 완전한 노이즈 캔슬링</li>
+    <li><strong>Aware 모드</strong>: 투명 모드 (주변음 허용)</li>
+    <li><strong>Immersion 모드</strong>: 공간음향 (음악 최적화)</li>
+    <li><strong>Cinema 모드</strong>: 공간음향 (영상 최적화)</li>
+</ul>
+
+<h3>블루투스 연결</h3>
+
+<h4>처음 연결하기</h4>
+<ol>
+    <li>Bose 앱 설치 후 전원 켜면 자동 감지</li>
+    <li>수동: 블루투스 버튼 길게 → 파란 불 깜빡이면 연결</li>
+    <li>Fast Pair (Android): 페어링 모드에서 자동 팝업</li>
+</ol>
+
+<h4>멀티포인트</h4>
+<ul>
+    <li>최대 2개 기기 동시 연결</li>
+    <li>최대 6개 기기 기억</li>
+</ul>
+
+<h3>LED 상태등 안내</h3>
+<div class="no-break">
+<table>
+    <thead>
+        <tr>
+            <th>LED 색상</th>
+            <th>의미</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>파란색 천천히 깜빡임</td>
+            <td>블루투스 연결 대기 (페어링 모드)</td>
+        </tr>
+        <tr>
+            <td>파란색 5초 켜짐</td>
+            <td>블루투스 연결 완료</td>
+        </tr>
+        <tr>
+            <td>흰색 켜짐</td>
+            <td>배터리 완충</td>
+        </tr>
+        <tr>
+            <td>주황색 켜짐</td>
+            <td>배터리 낮음~중간 또는 충전 중</td>
+        </tr>
+        <tr>
+            <td>흰색 2번 깜빡임</td>
+            <td>전원 꺼짐 또는 초기화 완료</td>
+        </tr>
+        <tr>
+            <td>주황색 빠르게 깜빡임</td>
+            <td>공장 초기화 진행 중</td>
+        </tr>
+        <tr>
+            <td>주황색/흰색 교대 깜빡임</td>
+            <td>오류 발생</td>
+        </tr>
+    </tbody>
+</table>
+</div>
+
+<div class="page-break"></div>
+
+<h2>공장 초기화 방법</h2>
+
+<h3>헤드폰 제품</h3>
+
+<h4>QC Ultra 헤드폰 2세대 / QC Ultra 헤드폰</h4>
+<ol>
+    <li>Bose 앱 제거</li>
+    <li>블루투스 목록 삭제</li>
+    <li><strong>블루투스/전원 버튼 + 다기능 버튼</strong> 동시에 <strong>15초</strong> 누름</li>
+    <li>흰색 불 → 완료</li>
+</ol>
+
+<h4>QC 헤드폰</h4>
+<ol>
+    <li>Bose 앱 제거</li>
+    <li>슬라이더를 <strong>BT 방향</strong>으로 밀어 페어링 모드 진입</li>
+    <li><strong>ANC 버튼 10초</strong> 누름</li>
+    <li>표시등 흰색 깜빡 → 완료</li>
+</ol>
+
+<h4>QC45 헤드폰</h4>
+<ol>
+    <li>Bose 앱 제거</li>
+    <li><strong>볼륨 − + 다기능 버튼</strong> 동시에 <strong>10초</strong> 누름</li>
+    <li>표시등 흰색 깜빡 → 완료</li>
+</ol>
+
+<h3>이어버드 제품</h3>
+
+<h4>QC Ultra 이어버드 2세대</h4>
+<p><strong>주의: 3번 반복 필수</strong></p>
+<ol>
+    <li>앱 제거 & BT 삭제</li>
+    <li>케이스 넣고 덮개 오픈 → 뒷면 버튼 <strong>25초</strong> 누름</li>
+    <li>흰색 2번 깜빡 → 파란색 → 꺼짐</li>
+    <li><strong>이 과정을 3번 반복</strong></li>
+    <li>3번째 후 주황색 깜빡 → 파란색 천천히 깜빡 → 완료</li>
+</ol>
+
+<h4>QC 이어버드 II</h4>
+<p><strong>1회만 실행</strong></p>
+<ol>
+    <li>앱 제거 & 충전 케이블 연결</li>
+    <li>케이스 넣고 덮개 오픈 → 뒷면 버튼 <strong>30초</strong> 누름</li>
+    <li>LED 흰색 고정 → 파란색 천천히 깜빡 → 완료</li>
+</ol>
+
+<h3>스피커 제품</h3>
+
+<h4>홈 스피커 300/450/500</h4>
+<ol>
+    <li>Bose 앱 제거</li>
+    <li><strong>볼륨 − + AUX 버튼</strong> 동시에 <strong>10초</strong></li>
+    <li>라이트 바 2번 깜빡 → 완료</li>
+</ol>
+
+<h4>SoundLink Flex / Max</h4>
+<ol>
+    <li>Bose 앱 제거</li>
+    <li><strong>전원 버튼 + 볼륨 − 버튼</strong> 동시에 <strong>10초</strong></li>
+    <li>흰색 깜빡 → 재부팅 → 완료</li>
+</ol>
+
+<div class="page-break"></div>
+
+<h2>서비스센터 정보</h2>
+
+<h3>세기HE BOSE 공식 서비스센터</h3>
+<ul>
+    <li><strong>주소</strong>: 서울시 중구 소파로 127번지 (남산동 2가 23) 세기빌딩</li>
+    <li><strong>전화</strong>: 02-3446-3514</li>
+    <li><strong>운영시간</strong>: 평일 오전 10시 ~ 오후 6시 (주말·공휴일 휴무)</li>
+</ul>
+
+<h3>찾아오는 길</h3>
+
+<h4>지하철</h4>
+<p>4호선 명동역 1번 출구 → 남산 케이블카 방면 도보 약 10분</p>
+
+<h4>버스</h4>
+<p>104, 105, 263, 421, 507, 604, 6001, 6015, 7011번 — 명동역 입구 하차</p>
+
+<h4>자가용</h4>
+<p>명동역 → 남산 방면 우회전 → 소파로(남산 케이블카) 방면 직진 → 명지빌딩 앞길 우회전 → 갈림길 좌회전 → BOSE 서비스센터 주차장</p>
+
+<hr>
+
+<h2>AS 접수 안내</h2>
+
+<h3>택배비 부담 기준</h3>
+<div class="no-break">
+<table>
+    <thead>
+        <tr>
+            <th>구매 시기</th>
+            <th>고객→센터</th>
+            <th>본사→고객</th>
+            <th>비고</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>3개월 미만</td>
+            <td>본사 부담</td>
+            <td>본사 부담</td>
+            <td>한진택배만 가능</td>
+        </tr>
+        <tr>
+            <td>3~6개월</td>
+            <td>고객 부담</td>
+            <td>본사 부담</td>
+            <td>모든 택배사 가능</td>
+        </tr>
+        <tr>
+            <td>6개월 이후</td>
+            <td>고객 부담</td>
+            <td>고객 부담</td>
+            <td>모든 택배사 가능</td>
+        </tr>
+    </tbody>
+</table>
+</div>
+
+<h3>포장 & 발송 체크리스트</h3>
+
+<h4>메모지 필수 동봉</h4>
+<p>개인정보보호법으로 발신자 정보가 가려지므로 반드시 메모지에 작성:</p>
+<ul>
+    <li>성함 · 연락처 · 주소</li>
+    <li>고장 증상 (자세히 작성할수록 빠른 처리)</li>
+</ul>
+
+<h4>영수증 첨부</h4>
+<ul>
+    <li><strong>종이 영수증</strong>: 제품과 함께 동봉</li>
+    <li><strong>온라인 구매</strong>: 구매 내역 캡처 후 인쇄해서 동봉</li>
+    <li><strong>1년 초과</strong>: 영수증 없이 접수 진행</li>
+</ul>
+
+<h4>제품 안전 포장</h4>
+<ul>
+    <li>완충재로 꼼꼼히 감싸 파손 방지</li>
+</ul>
+
+<h3>무상 AS 제외 사항 (고객 과실)</h3>
+<ul>
+    <li><strong>침수</strong>: 물에 젖은 경우</li>
+    <li><strong>파손</strong>: 외부 충격으로 손상된 경우</li>
+    <li><strong>분실</strong>: 부품이나 액세서리를 잃어버린 경우</li>
+</ul>
+<p>위 경우 유상 수리로만 진행 가능</p>
+
+<h3>단종 제품 보상교체 안내</h3>
+<p>제품 불량 확인 시: 현재 출시 중인 제품을 <strong>약 25% 할인된 가격</strong>으로 보상 교체</p>
+
+<div class="page-break"></div>
+
+<h2>블루투스 연결 문제 해결</h2>
+
+<h3>새 기기에 연결이 안 될 때</h3>
+
+<h4>방법 1: Bose 앱 (권장)</h4>
+<ul>
+    <li>Bose 앱 설치 후 헤드폰 전원 켜기</li>
+    <li>앱이 자동으로 감지하여 연결 안내</li>
+</ul>
+
+<h4>방법 2: 수동 페어링</h4>
+<ol>
+    <li>헤드폰 전원 끄기</li>
+    <li>블루투스/전원 버튼 길게 눌러 파란 불 깜빡임 (페어링 모드)</li>
+    <li>스마트폰 블루투스 설정에서 <strong>BOSE QC ULTRA 2 HP</strong> 선택</li>
+</ol>
+
+<h4>방법 3: Fast Pair (Android 전용)</h4>
+<ul>
+    <li>페어링 모드 상태에서 Android 기기 가까이 두기</li>
+    <li>화면에 팝업 알림 표시 → 탭하여 연결</li>
+</ul>
+
+<h3>쓰던 기기에 갑자기 안 될 때</h3>
+<ol>
+    <li><strong>기기 블루투스 껐다 켜기</strong>: 스마트폰 블루투스 재시작</li>
+    <li><strong>헤드폰 전원 껐다 켜기</strong>: 헤드폰 완전히 껐다가 다시 켜기</li>
+    <li><strong>블루투스 목록에서 삭제 후 재연결</strong>: 처음부터 다시 페어링</li>
+</ol>
+
+<h3>연결이 자꾸 끊길 때</h3>
+
+<h4>원인 1: 거리 또는 장애물</h4>
+<ul>
+    <li>블루투스 안정 범위: 약 10m 이내</li>
+    <li>벽, 사람 등 장애물 많으면 신호 약화</li>
+</ul>
+
+<h4>원인 2: 무선 간섭</h4>
+<ul>
+    <li>와이파이 공유기, 전자레인지 근처에서 끊김 심화</li>
+    <li>위치 변경 테스트 권장</li>
+</ul>
+
+<h4>원인 3: 여러 기기 동시 연결 시도</h4>
+<ul>
+    <li>이전 연결 기기가 자동 연결 시도 시 끊김 가능</li>
+    <li>사용하지 않는 기기의 블루투스 끄기</li>
+</ul>
+
+<hr>
+
+<h2>고객센터 연락처</h2>
+<ul>
+    <li><strong>BOSE 공식 고객센터</strong>: 1588-5044 (평일 09:00~18:00)</li>
+    <li><strong>한진택배</strong>: 1588-0011</li>
+    <li><strong>서비스센터</strong>: 02-3446-3514 (평일 10:00~18:00)</li>
+</ul>
+
+</body>
+</html>
