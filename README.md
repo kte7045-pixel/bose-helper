@@ -7,7 +7,7 @@
 - 정확한 정보는 BOSE 공식 고객센터(1588-5044) 문의 필수
 
 ## 🌐 Live Demo
-👉 [여기서 체험하기](https://kte7045-pixel.github.io/bose-helper/bose_v11__1_.html)
+👉 [여기서 체험하기](https://kte7045-pixel.github.io/bose-helper/)
 *(GitHub Pages 활성화 후 접속 가능)*
 
 ## 📱 주요 기능
